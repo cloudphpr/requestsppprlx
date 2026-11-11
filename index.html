@@ -1,0 +1,2285 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parts Request — Perfect Relax</title>
+<style>
+  :root {
+    --ink: #15203D;
+    --deep: #1B3E8F;
+    --sage: #EEF3FC;
+    --sage-line: #D7E1F5;
+    --gold: #2F5FD1;
+    --gold-soft: #E3EAFB;
+    --white: #FFFFFF;
+    --ok: #3E7A52;
+    --ok-soft: #E4F1E7;
+    --pending: #A85E1D;
+    --pending-soft: #F7E9D8;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--sage);
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  header {
+    background: var(--deep);
+    color: var(--white);
+    padding: 22px 24px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  .header-logo {
+    height: 56px;
+    width: auto;
+    background: var(--white);
+    border-radius: 8px;
+    padding: 6px 10px;
+    flex-shrink: 0;
+  }
+
+  .header-text {
+    flex: 1 1 auto;
+  }
+
+  .header-text h1 {
+    margin: 0 0 4px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+  }
+
+  .header-text p {
+    margin: 0;
+    color: #C9D6F7;
+    font-size: 0.92rem;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  .header-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--white);
+    color: var(--deep);
+    border: 1px solid var(--sage-line);
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  }
+
+  .header-btn:hover { background: var(--sage); }
+  .header-btn svg { flex-shrink: 0; }
+
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+
+  .panel {
+    background: var(--white);
+    border: 1px solid var(--sage-line);
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 24px;
+  }
+
+  .panel h2 {
+    margin: 0 0 16px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--deep);
+  }
+
+  .subhead {
+    margin: 24px 0 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--deep);
+  }
+
+  .admin-block { margin-top: 8px; }
+  .admin-gate { max-width: 340px; }
+  .stock-low { color: #B23A2E; font-weight: 700; }
+
+  .list-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .list-toolbar h2 { margin: 0; }
+  .toolbar-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+  .search-field input { width: auto; min-width: 180px; }
+  .sort-field { display: flex; align-items: center; gap: 8px; }
+  .sort-field label { white-space: nowrap; }
+  .sort-field select { width: auto; min-width: 150px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #44506E;
+  }
+
+  input, textarea, select {
+    border: 1px solid var(--sage-line);
+    border-radius: 7px;
+    padding: 9px 11px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: #FBFCFF;
+    color: var(--ink);
+  }
+
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--gold);
+    background: var(--white);
+  }
+
+  input:disabled { background: #EEF1F8; color: #7C88A8; }
+
+  textarea { resize: vertical; min-height: 64px; }
+
+  .actions { margin-top: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+  button {
+    font-family: inherit;
+    font-size: 0.92rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 7px;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+
+  .btn-primary { background: var(--deep); color: var(--white); }
+  .btn-primary:hover { background: #142F70; }
+  .btn-primary:disabled { background: #A9B4CE; cursor: not-allowed; }
+
+  .btn-ghost { background: var(--gold-soft); color: #1B3E8F; }
+  .btn-ghost:hover { background: #D7E1F7; }
+
+  .status-msg { font-size: 0.86rem; color: #44506E; }
+  .status-msg.error { color: #B23A2E; }
+  .status-msg.success { color: var(--ok); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    background: #EEF3FC;
+    color: #44506E;
+    font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border-bottom: 1px solid var(--sage-line);
+  }
+
+  td {
+    padding: 11px 12px;
+    border-bottom: 1px solid #E3EAF7;
+    vertical-align: top;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .badge.pending { background: var(--pending-soft); color: var(--pending); }
+  .badge.ok { background: var(--ok-soft); color: var(--ok); }
+  .badge.progres { background: var(--gold-soft); color: var(--deep); }
+
+  .resi-btn {
+    background: transparent;
+    color: var(--deep);
+    border: 1px solid var(--deep);
+    padding: 5px 12px;
+    font-size: 0.8rem;
+    border-radius: 6px;
+  }
+  .resi-btn:hover { background: var(--deep); color: var(--white); }
+  .resi-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .field-edit-btn { margin-left: 8px; }
+  td[data-label="No Resi"], td[data-label="Progres"], td[data-label="Status"], td[data-label="Aksi"] { white-space: nowrap; }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #7C88A8;
+    font-size: 0.9rem;
+  }
+
+  .config-warning {
+    background: #FDECEC;
+    border: 1px solid #F3B9B4;
+    color: #8C2E24;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    font-size: 0.88rem;
+  }
+
+  .config-warning code {
+    background: #FBD9D6;
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+
+  /* Modal */
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 30, 29, 0.45);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 10;
+  }
+  .modal-backdrop.open { display: flex; }
+
+  .modal {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 22px;
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .modal h3 { margin: 0 0 4px; font-size: 1.05rem; color: var(--deep); }
+  .modal p { margin: 0 0 14px; font-size: 0.85rem; color: #5C6B8C; }
+
+  .modal-actions { margin-top: 16px; display: flex; justify-content: flex-end; gap: 10px; }
+
+  .btn-cancel { background: #E3EAF7; color: #44506E; }
+  .btn-cancel:hover { background: #E1E8F7; }
+
+  .part-rows { display: flex; flex-direction: column; gap: 8px; }
+
+  .part-row {
+    display: grid;
+    grid-template-columns: 2.2fr 90px 32px;
+    gap: 8px;
+    align-items: start;
+  }
+
+  .foto-preview-wrap {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .foto-preview-wrap img {
+    width: 84px;
+    height: 84px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--sage-line);
+  }
+
+  .foto-remove-btn {
+    background: #F6E7E5;
+    color: #A83A2E;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    border-radius: 6px;
+  }
+  .foto-remove-btn:hover { background: #F0D2CE; }
+
+  .hint-text {
+    font-size: 0.78rem;
+    color: #8290AF;
+    margin-top: 4px;
+    display: block;
+  }
+
+  .foto-thumb {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--sage-line);
+    cursor: pointer;
+  }
+
+  .autocomplete-wrap { position: relative; }
+
+  .part-row input[type="text"] { width: 100%; }
+
+  .autocomplete-list {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border: 1px solid var(--sage-line);
+    border-radius: 8px;
+    box-shadow: 0 6px 16px rgba(28, 43, 42, 0.12);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 5;
+  }
+
+  .autocomplete-list.open { display: block; }
+
+  .autocomplete-item {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.88rem;
+  }
+  .autocomplete-item:hover,
+  .autocomplete-item:active { background: #EEF3FC; }
+
+  .autocomplete-item .ac-kode {
+    font-weight: 600;
+    color: var(--deep);
+    flex-shrink: 0;
+  }
+  .autocomplete-item .ac-nama { color: #51608A; }
+
+  .autocomplete-empty {
+    padding: 9px 12px;
+    font-size: 0.82rem;
+    color: #8290AF;
+    font-style: italic;
+  }
+
+  .part-row input[type="number"] { width: 100%; text-align: center; }
+
+  .part-row .remove-row {
+    background: #F6E7E5;
+    color: #A83A2E;
+    border: none;
+    border-radius: 6px;
+    width: 32px;
+    height: 34px;
+    padding: 0;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .part-row .remove-row:hover { background: #F0D2CE; }
+
+  .part-row .custom-name {
+    grid-column: 1 / -1;
+  }
+
+  .btn-add-row {
+    align-self: flex-start;
+    background: transparent;
+    color: var(--deep);
+    border: 1px dashed var(--sage-line);
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    border-radius: 7px;
+  }
+  .btn-add-row:hover { border-color: var(--deep); background: #EEF3FC; }
+
+  @media (max-width: 600px) {
+    .part-row { grid-template-columns: 1fr 70px 32px; }
+    .grid { grid-template-columns: 1fr; }
+    table, thead, tbody, th, td, tr { display: block; }
+    thead { display: none; }
+    tr { border-bottom: 1px solid var(--sage-line); padding: 10px 0; }
+    td { border: none; padding: 4px 0; }
+    td::before {
+      content: attr(data-label);
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #8592B3;
+      margin-bottom: 2px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="data:image/png;base64,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" alt="Perfect Health / Perfect Relax" class="header-logo">
+  <div class="header-text">
+    <h1>Parts Request</h1>
+    <p>Perfect Relax — pengajuan dan pelacakan pengiriman parts</p>
+  </div>
+  <div class="header-actions">
+    <button type="button" id="statusUploadBtn" class="header-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+      Status Upload
+    </button>
+    <button type="button" id="adminToggleBtn" class="header-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      Dashboard Admin
+    </button>
+  </div>
+</header>
+
+<main>
+  <div id="configWarning" class="config-warning" style="display:none;">
+    Web App URL belum diisi. Buka file ini, cari <code>WEB_APP_URL</code> di bagian bawah,
+    dan isi dengan URL hasil deploy Apps Script kamu.
+  </div>
+
+  <section class="panel" id="requestFormPanel">
+    <h2>Ajukan Request Baru</h2>
+    <form id="requestForm">
+      <div class="grid">
+        <div class="field">
+          <label for="nama">Nama</label>
+          <input type="text" id="nama" required>
+        </div>
+        <div class="field">
+          <label for="lokasi">Lokasi</label>
+          <div class="autocomplete-wrap">
+            <input type="text" id="lokasi" required autocomplete="off" placeholder="Ketik kode atau nama outlet…">
+            <div class="autocomplete-list" id="lokasiList"></div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="noKursi">No Kursi</label>
+          <input type="text" id="noKursi" required>
+        </div>
+        <div class="field">
+          <label for="alamatDiterima">Alamat Diterima</label>
+          <input type="text" id="alamatDiterima" required>
+        </div>
+        <div class="field full">
+          <label>Parts (barang yang di-request)</label>
+          <div id="partRows" class="part-rows"></div>
+          <button type="button" id="addPartRow" class="btn-add-row">+ Tambah Item</button>
+        </div>
+        <div class="field full">
+          <label for="fotoInput">Foto Lokasi/Kondisi (opsional)</label>
+          <input type="file" id="fotoInput" accept="image/*">
+          <div id="fotoPreviewWrap" class="foto-preview-wrap" style="display:none;">
+            <img id="fotoPreviewImg" alt="Preview foto">
+            <button type="button" id="fotoRemoveBtn" class="foto-remove-btn">Hapus foto</button>
+          </div>
+          <span class="hint-text" id="fotoHint"></span>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="submit" class="btn-primary" id="submitBtn">Kirim Request</button>
+        <span class="status-msg" id="formStatus"></span>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel" id="daftarRequestPanel" style="display:none;">
+    <div class="list-toolbar">
+      <h2>Daftar Request</h2>
+      <div class="toolbar-controls">
+        <div class="search-field">
+          <input type="text" id="staffSearchInput" placeholder="Cari nama…" autocomplete="off">
+        </div>
+        <div class="sort-field">
+          <label for="staffSortSelect">Urutkan</label>
+          <select id="staffSortSelect">
+            <option value="date_desc">Tanggal terbaru</option>
+            <option value="date_asc">Tanggal terlama</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div id="tableWrap">
+      <div class="empty-state">Memuat data…</div>
+    </div>
+  </section>
+
+  <section class="panel" id="adminPanel" style="display:none;">
+    <h2>Dashboard Admin</h2>
+
+    <div id="adminLoginGate">
+      <p class="hint-text" style="margin-bottom:12px;">Masukkan password admin untuk melihat &amp; approve request, serta mengatur stock.</p>
+      <div class="grid admin-gate">
+        <div class="field full">
+          <label for="adminPasswordInput">Password Admin</label>
+          <input type="password" id="adminPasswordInput" placeholder="Password admin">
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn-primary" id="adminLoginBtn">Masuk</button>
+        <span class="status-msg" id="adminLoginStatus"></span>
+      </div>
+    </div>
+
+    <div id="adminContent" style="display:none;">
+      <div class="list-toolbar">
+        <h3 class="subhead" style="margin:0;">Request Masuk</h3>
+        <div class="toolbar-controls">
+          <div class="search-field">
+            <input type="text" id="adminSearchInput" placeholder="Cari nama…" autocomplete="off">
+          </div>
+          <div class="sort-field">
+            <label for="adminSortSelect">Urutkan</label>
+            <select id="adminSortSelect">
+              <option value="date_desc">Tanggal terbaru</option>
+              <option value="date_asc">Tanggal terlama</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div id="adminRequestsWrap"><div class="empty-state">Memuat data…</div></div>
+
+      <div class="admin-block">
+        <h3 class="subhead">Stock Barang</h3>
+        <div class="actions" style="margin-bottom:12px;">
+          <button type="button" class="btn-ghost" id="addStockBtn">+ Tambah Item Stock</button>
+        </div>
+        <div id="stockWrap"><div class="empty-state">Memuat data…</div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="modal-backdrop" id="editModal">
+  <div class="modal">
+    <h3 id="editModalTitle">Isi No Resi</h3>
+    <p id="editModalSubtitle"></p>
+    <div class="field">
+      <label for="editModalInput" id="editModalLabel">No Resi</label>
+      <input type="text" id="editModalInput" placeholder="Contoh: JX123456789">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="editModalCancel">Batal</button>
+      <button class="btn-primary" id="editModalSave">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="stockModal">
+  <div class="modal">
+    <h3 id="stockModalTitle">Tambah Item Stock</h3>
+    <div class="field" id="stockModalKodeField">
+      <label for="stockModalKodeInput">Kode Part</label>
+      <div class="autocomplete-wrap">
+        <input type="text" id="stockModalKodeInput" placeholder="Ketik kode atau nama part…" autocomplete="off">
+        <div class="autocomplete-list" id="stockModalKodeList"></div>
+      </div>
+    </div>
+    <div class="field" style="margin-top:10px;">
+      <label for="stockModalNamaInput">Nama Part</label>
+      <input type="text" id="stockModalNamaInput" placeholder="Nama part">
+    </div>
+    <div class="field" style="margin-top:10px;">
+      <label for="stockModalStokInput">Jumlah Stock</label>
+      <input type="number" id="stockModalStokInput" min="0" value="0">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="stockModalCancel">Batal</button>
+      <button class="btn-primary" id="stockModalSave">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ==== KONFIGURASI ====
+  // Ganti dengan URL hasil "Deploy > New deployment" dari Apps Script (Code.gs)
+  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbx9yeSZKGKYtkGcUFe6nApxudy1BQFyjltJqXbxVR3zwKOgQ_-VOxvhta5QhBnKER0v/exec';
+  // ======================
+
+  // Daftar parts (dari Parts_.xlsx) — kode + nama barang
+  const PARTS_LIST = [
+{"kode": "KP-01", "nama": "KABEL PUTIH 5 METER"},
+{"kode": "KH-02", "nama": "KABEL HITAM 5 METER"},
+{"kode": "KRP-01", "nama": "KARPET RUMPUT"},
+{"kode": "TP-01", "nama": "TRIPOD"},
+{"kode": "IF-01", "nama": "INFRABORD CUSTOM"},
+{"kode": "STP-01", "nama": "STP"},
+{"kode": "GB-01", "nama": "GEMBOK"},
+{"kode": "LH-01", "nama": "LAKBAN HITAM"},
+{"kode": "LK-02", "nama": "LAKBAN KERTAS"},
+{"kode": "LB-03", "nama": "LAKBAN BENING"},
+{"kode": "SL-01", "nama": "SOLATIP LISTRIK"},
+{"kode": "ST-01", "nama": "STECKER"},
+{"kode": "SK-02", "nama": "STOP KONTAK 2"},
+{"kode": "SK-03", "nama": "STOP KONTAK 3"},
+{"kode": "SK-04", "nama": "STOP KONTAK 4"},
+{"kode": "MCB-02", "nama": "MCB 2A"},
+{"kode": "MCB-04", "nama": "MCB 4A"},
+{"kode": "MCB-06", "nama": "MCB 6A"},
+{"kode": "MCB-010", "nama": "MCB 10A"},
+{"kode": "MCB-016", "nama": "MCB 16A"},
+{"kode": "KWH-01", "nama": "KWH"},
+{"kode": "RMCB-01", "nama": "RUMAH MCB"},
+{"kode": "PHY-01", "nama": "PHYLON CUSTOM"},
+{"kode": "PRT-01", "nama": "PARTISI BOX"},
+{"kode": "PRT-02", "nama": "PARTISI LED"},
+{"kode": "PRT-03", "nama": "PARTISI NON LED"},
+{"kode": "BSK-01", "nama": "BOX STOP KONTAK"},
+{"kode": "CV-01", "nama": "COVER KURSI"},
+{"kode": "SQ-01", "nama": "STIKER QC"},
+{"kode": "LVL-01", "nama": "LAVELING COKLAT"},
+{"kode": "LVL-02", "nama": "LAVELING ABU"},
+{"kode": "KD-01", "nama": "KABEL DUCTING"},
+{"kode": "JJ-01", "nama": "JARING JARING BACREST TIPE 2"},
+{"kode": "PGG-20", "nama": "SANDARAN PUNGGUNG TIPE 1 WARNA HITAM"},
+{"kode": "KPL-55", "nama": "SANDARAN KEPALA TIPE 1 WARNA HITAM"},
+{"kode": "DDK-18A", "nama": "DUDUKAN TIPE 1 WARNA HITAM"},
+{"kode": "KK-01", "nama": "KULIT KAKI TIPE 1 WARNA HITAM"},
+{"kode": "PGG-20A", "nama": "SANDARAN PUNGGUNG TIPE 1 WARNA COKLAT"},
+{"kode": "KPL-55B", "nama": "SANDARAN KEPALA TIPE 1 WARNA COKLAT"},
+{"kode": "DDK-18C", "nama": "DUDUKAN TIPE 1 WARNA COKLAT "},
+{"kode": "KKC-01B", "nama": "KULIT KAKI TIPE 1 WARNA COKLAT"},
+{"kode": "PGG-36", "nama": "SANDARAN PUNGGUNG TIPE 2 WARNA HITAM"},
+{"kode": "KPL-36", "nama": "SANDARAN KEPALA TIPE 2 WARNA HITAM"},
+{"kode": "DDK-40B", "nama": "DUDUKAN TIPE 2 WARNA HITAM"},
+{"kode": "KKH-01B", "nama": "KULIT KAKI TIPE 2 WARNA HITAM"},
+{"kode": "RSL-21A", "nama": "KAIN RESLETING BAGIAN TENGAH TIPE 1 HITAM"},
+{"kode": "RSL-21C", "nama": "KAIN RESLETING BAGIAN TENGAH TIPE 1 COKLAT"},
+{"kode": "BD-01", "nama": "BARDI SMART PLUG"},
+{"kode": "BCR-21A(FULL SET)", "nama": "BACKREST ASSEMBLY FULL TIPE 1"},
+{"kode": "BCRT-21E", "nama": "BACKREST LEATHER ONLY TENGAH TIPE 1"},
+{"kode": "DT-01", "nama": "DOUBLE TAPE 3M"},
+{"kode": "LF-01", "nama": "LAKBAN FRAGILE"},
+{"kode": "STT-01", "nama": "STECKER  T ARDE"},
+{"kode": "KMP-01", "nama": "Kabel Merah Putih "},
+{"kode": "KFMP-01", "nama": "Kabel Female Merah Putih"},
+{"kode": "HB-01", "nama": "Holder Bearing "},
+{"kode": "PCBMAIN-01", "nama": "PCB Main "},
+{"kode": "PCBS-01", "nama": "PCB Sensor "},
+{"kode": "PCBM-01", "nama": "PCB Memory"},
+{"kode": "AS-01", "nama": "Airbag Samping "},
+{"kode": "AK-01", "nama": "Airbag Kaki"},
+{"kode": "SA-01", "nama": "Selang Airbag"},
+{"kode": "BA-01", "nama": "Bill Acceptor "},
+{"kode": "KPJGBA-01", "nama": "Kabel Panjang Bill Acceptor "},
+{"kode": "KPDKBA-01", "nama": "Kabel Pendek Bill Acceptor "},
+{"kode": "KV-01", "nama": "Kabel Vibrator "},
+{"kode": "D-01", "nama": "Dinamo Atas "},
+{"kode": "HK-01", "nama": "Hidrolik Kaki "},
+{"kode": "HP-01", "nama": "Hidrolik Punggung "},
+{"kode": "LLCD-01", "nama": "Layar LCD "},
+{"kode": "MS-01", "nama": "Mesin Set "},
+{"kode": "PK-01", "nama": "Per Kecil "},
+{"kode": "PB-01", "nama": "Per Besar"},
+{"kode": "RN-01", "nama": "Rud Nut "},
+{"kode": "STTBL-01", "nama": "Stiker Tombol"},
+{"kode": "THJ-01", "nama": "Trafo HJ5"},
+{"kode": "THJAC-01", "nama": "Trafo HJAC"},
+{"kode": "TTUC-01", "nama": "Tutup Tampungan Uang Cash"},
+{"kode": "VB-01", "nama": "Van Belt"},
+{"kode": "LAINLAIN-01", "nama": "LAIN LAIN"},
+{"kode": "SPK-03", "nama": "STIKER PENGGUNAAN KURSI TIPE 3"},
+{"kode": "SPKT-03", "nama": "STIKER PENGGUNAAN KURSI TIPE 3-TAB"},
+{"kode": "SPK-01", "nama": "STIKER PENGGUNAAN KURSI TIPE 1"},
+{"kode": "SPK-02", "nama": "STIKER PENGGUNAAN KURSI TIPE 2"},
+{"kode": "AKR-01", "nama": "AKRILIK QRISS STIKER"},
+{"kode": "QR-01", "nama": "QRISS NEW"},
+{"kode": "QR-02", "nama": "PCB QRISS TUKAR GULING"},
+{"kode": "STN-01", "nama": "STIKER TUNAI"},
+{"kode": "TLK-01", "nama": "1 PAKET TOOLKIT"},
+{"kode": "TAS-01", "nama": "Tas Toolkit"},
+{"kode": "MC-01", "nama": "Microfiber"},
+{"kode": "KN-01", "nama": "Kanebo"},
+{"kode": "PAS-14", "nama": "Kunci Pas 14"},
+{"kode": "SKT-01", "nama": "Sikat"},
+{"kode": "TK-01", "nama": "Tang Kombinasi "},
+{"kode": "TL-02", "nama": "Tang Lancip"},
+{"kode": "TL-03", "nama": "Tang Potong"},
+{"kode": "TSP-01", "nama": "Tespen"},
+{"kode": "OM-01", "nama": "Obeng Mines"},
+{"kode": "OP-02", "nama": "Obeng Plus"},
+{"kode": "SP-01", "nama": "Sapu + Pengki"},
+{"kode": "D-02", "nama": "Dinamo Bawah"},
+{"kode": "PCB-01", "nama": "PCB Tapping"},
+{"kode": "KPL-03", "nama": "Kulit Kepala Tipe 3"},
+{"kode": "PGG-03", "nama": "Kulit Punggung Tipe 3"},
+{"kode": "TKR-03", "nama": "Kulit Tangan Kiri Tipe 3"},
+{"kode": "TKN-03", "nama": "Kulit Tangan Kanan Tipe 3"},
+{"kode": "BHKR-03", "nama": "Kulit Bahu Kiri Tipe 3"},
+{"kode": "BHKN-03", "nama": "Kulit Bahu Kanan Tipe 3"},
+{"kode": "DDK-03", "nama": "Kulit Dudukan Tipe 3"},
+{"kode": "KKR-03", "nama": "Kulit Kaki Kiri Tipe 3"},
+]
+;
+
+  // Daftar outlet/lokasi (dari Outlet_(6).xlsx) — kode + nama outlet
+  const OUTLET_LIST = [
+{"kode": "A001", "nama": "Ancol Dufan Ice Age"},
+{"kode": "A002", "nama": "Dago Dreampark"},
+{"kode": "A005", "nama": "Taman Aerosport Pekanbaru"},
+{"kode": "A006", "nama": "Sariater"},
+{"kode": "A007", "nama": "Go! Wet Waterpark Grand Wisata"},
+{"kode": "A009", "nama": "Heha Sky View Yogyakarta"},
+{"kode": "A011", "nama": "The Great Asia Afrika "},
+{"kode": "A012", "nama": "Farms House Lembang"},
+{"kode": "A013", "nama": "Candi Prambanan"},
+{"kode": "A016", "nama": "Miki Holiday Funland"},
+{"kode": "A017", "nama": "Floating Market Lembang"},
+{"kode": "A018", "nama": "Heha Ocean View Yogyakarta"},
+{"kode": "A020", "nama": "Asstro Highland Ciater"},
+{"kode": "A021", "nama": "D'Castello Ciater"},
+{"kode": "A022", "nama": "Ancol Seaworld"},
+{"kode": "A023", "nama": "Jatim Park 3"},
+{"kode": "A024", "nama": "Saraehills"},
+{"kode": "A025", "nama": "Rasamadu Heritage"},
+{"kode": "A027", "nama": "Nicole's River Park"},
+{"kode": "A028", "nama": "Taman Bunga Celosia"},
+{"kode": "A029", "nama": "Kidzania Surabaya"},
+{"kode": "A030", "nama": "Brasco Factory Outlet"},
+{"kode": "A031", "nama": "Taman Safari Indonesia"},
+{"kode": "A033", "nama": "Hillpark Sibolangit"},
+{"kode": "A036", "nama": "Lokawisata Baturraden "},
+{"kode": "A037", "nama": "Menara Pandang Teratai Purwokerto"},
+{"kode": "A038", "nama": "Taman Mas Kemambang"},
+{"kode": "A039", "nama": "Ancol Ocean Dream Samudra"},
+{"kode": "A040", "nama": "Museum Listrik & Energi Baru TMII"},
+{"kode": "A041", "nama": "Saloka Theme Park"},
+{"kode": "A042", "nama": "Bhakti Alam Pasuruan"},
+{"kode": "A044", "nama": "Cluring Waterpark"},
+{"kode": "A045", "nama": "The Bagong Adventure Museum Tubuh"},
+{"kode": "A046", "nama": "Batu Love Garden "},
+{"kode": "A047", "nama": "Taman Ruang Playground Riau"},
+{"kode": "A048", "nama": "Eco Green Park"},
+{"kode": "A050", "nama": "Beefun Playland Surabaya"},
+{"kode": "A051", "nama": "Beefun Playland Sidoarjo"},
+{"kode": "A052", "nama": "Museum Angkut Malang"},
+{"kode": "A053", "nama": "Taman Wisata Air Wendit"},
+{"kode": "A054", "nama": "Taman Rekreasi Selecta"},
+{"kode": "A055", "nama": "Siantar Waterpark"},
+{"kode": "A057", "nama": "Water kingdom Mekarsari"},
+{"kode": "A060", "nama": "Loken Resort"},
+{"kode": "A061", "nama": "Bogor Aquagame"},
+{"kode": "A062", "nama": "Scientia Square Park"},
+{"kode": "A063", "nama": "Taman Balekambang Surakarta"},
+{"kode": "A064", "nama": "Atlantis Water Adventure Ancol"},
+{"kode": "A065", "nama": "Supersplash Waterpark Kartika Residence"},
+{"kode": "A066", "nama": "Snowville Sentul"},
+{"kode": "A067", "nama": "Solo Safari"},
+{"kode": "A068", "nama": "Jatim Park 1"},
+{"kode": "A069", "nama": "Skyward Project Bandung"},
+{"kode": "A070", "nama": "Caliandra Gallery Sari Ater Campervan Park"},
+{"kode": "A072", "nama": "Dusun Bambu Lembang"},
+{"kode": "A073", "nama": "De Valais Garden & Resto"},
+{"kode": "A074", "nama": "Wisata Bukit Domba Sentul"},
+{"kode": "A075", "nama": "Milenial Glow Garden"},
+{"kode": "A076", "nama": "Pitcniq Jogja"},
+{"kode": "A077", "nama": "Heha Forest"},
+{"kode": "B001", "nama": "Tirtonadi Solo"},
+{"kode": "B002", "nama": "Terminal Tingkir Salatiga"},
+{"kode": "B004", "nama": "Terminal Tidar Magelang"},
+{"kode": "B005", "nama": "Terminal Tegal"},
+{"kode": "B006", "nama": "Terminal Tipe A Gambut Barakat"},
+{"kode": "B007", "nama": "Terminal Leuwipanjang Bandung"},
+{"kode": "B008", "nama": "Terminal Tipe A Mendolo Wonosobo"},
+{"kode": "C001", "nama": "RS Bakti Timah Pangkal Pinang"},
+{"kode": "C004", "nama": "RS.Islam Sultan Agung Banjarbaru"},
+{"kode": "C005", "nama": "RS Indriati Solo Baru"},
+{"kode": "C006", "nama": "RS Aulia Pekanbaru"},
+{"kode": "C007", "nama": "RSAU Dr M Hasan Toto Bogor"},
+{"kode": "C008", "nama": "RSUD Cempaka Lima Aceh"},
+{"kode": "C009", "nama": "Klinik Cempaka Lima Aceh"},
+{"kode": "C010", "nama": "RS Siloam Lippo Village"},
+{"kode": "C011", "nama": "RS MRCCC Siloam Semanggi"},
+{"kode": "C012", "nama": "RS Siloam Kebon Jeruk"},
+{"kode": "C013", "nama": "RSIA Cempaka Azzahra Aceh"},
+{"kode": "C014", "nama": "RS Indriati Boyolali"},
+{"kode": "C015", "nama": "RS DR Bratanata Jambi"},
+{"kode": "C016", "nama": "RS Mayapada Tanggerang"},
+{"kode": "C017", "nama": "RS Islam Siti Hajar"},
+{"kode": "C018", "nama": "RS Eria Pekanbaru"},
+{"kode": "C019", "nama": "RSUD DR Adjidarmo Rangkasbitung"},
+{"kode": "C020", "nama": "Klinik Utama Fakhira"},
+{"kode": "C021", "nama": "RS Ananda Purwokerto"},
+{"kode": "C022", "nama": "RSUD Gambiran Kota Kediri"},
+{"kode": "C023", "nama": "RSUD Khidmat Sehat Afiat (KISA) Depok"},
+{"kode": "C024", "nama": "RSUD Koja Jakarta"},
+{"kode": "C025", "nama": "RSUD Kota Mataram"},
+{"kode": "C026", "nama": "RS Siloam Bogor"},
+{"kode": "C027", "nama": "RS Universitas Sebelas Maret"},
+{"kode": "C028", "nama": "RSUD Simpang Lima Gumul Kediri"},
+{"kode": "C029", "nama": "RSUD Teluk Kuantan"},
+{"kode": "C030", "nama": "RSUD Praya"},
+{"kode": "C031", "nama": "Skinologic Clinic"},
+{"kode": "C032", "nama": "Apotek Welings Tebet"},
+{"kode": "C033", "nama": "Apotek Welings PIK"},
+{"kode": "C034", "nama": "RS Medika Dramaga"},
+{"kode": "C035", "nama": "Norma Aesthetic Clinic Madiun"},
+{"kode": "C036", "nama": "Rsu Banjar Patroman"},
+{"kode": "C037", "nama": "RSUD Kardinah Tegal"},
+{"kode": "C038", "nama": "RSUD Cimacan"},
+{"kode": "C039", "nama": "RS Bhayangkara Kediri"},
+{"kode": "C040", "nama": "RS Islam Aminah Blitar"},
+{"kode": "C041", "nama": "RS Dadi Keluarga Ciamis"},
+{"kode": "C043", "nama": "Norma Aesthetic Clinic Semarang"},
+{"kode": "C044", "nama": "RS Murni Teguh Memorial"},
+{"kode": "C045", "nama": "RS Murni Teguh Rosiva"},
+{"kode": "C046", "nama": "RS Murni Teguh Methodist Susana Wesley"},
+{"kode": "C047", "nama": "RS Murni Teguh Horas Insani"},
+{"kode": "C048", "nama": "RS Murni Teguh Pematang Siantar"},
+{"kode": "C049", "nama": "RS Murni Teguh Ciledug"},
+{"kode": "C050", "nama": "RS Murni Teguh Sudirman Jakarta"},
+{"kode": "C051", "nama": "RS Murni Teguh Tuban Bali Hospital"},
+{"kode": "C052", "nama": "RS Murni Teguh Naripan Bandung"},
+{"kode": "C053", "nama": "RS Murni Teguh Pejaten"},
+{"kode": "C054", "nama": "Klinik Liza Medika Jambi"},
+{"kode": "C055", "nama": "Koperasi Mitra Husada Sidoarjo"},
+{"kode": "C056", "nama": "Siloam Hospitals Agora"},
+{"kode": "C057", "nama": "Siloam Hospitals Dhirga Surya Medan"},
+{"kode": "C058", "nama": "RS Restu Kasih"},
+{"kode": "C060", "nama": "RSUD Srengat Kabupaten Blitar"},
+{"kode": "C061", "nama": "RS Betha Medika"},
+{"kode": "C062", "nama": "RS Kartika Kasih"},
+{"kode": "C063", "nama": "RS Hermina Opi Jakabaring"},
+{"kode": "C064", "nama": "RS Sumber Kasih Cirebon"},
+{"kode": "C065", "nama": "RSUD R.Syamsudin,SH"},
+{"kode": "C066", "nama": "RS Cinta Kasih"},
+{"kode": "C067", "nama": "RS Universitas Andalas"},
+{"kode": "C068", "nama": "RSU Dadi Keluarga Purwokerto"},
+{"kode": "D001", "nama": "Bandara Aji Pangeran Tumenggung Pranoto Samarinda Samarinda"},
+{"kode": "D002", "nama": "Bandara Depati Amir Pangkal Pinang"},
+{"kode": "D003", "nama": "Bandara Sutan Syarif Kasim II PekanBaru"},
+{"kode": "D004", "nama": "Bandara Supadio Pontianak"},
+{"kode": "D005", "nama": "Bandara Kualanamu Medan"},
+{"kode": "D006", "nama": "Bandara Minangkabau Padang"},
+{"kode": "D007", "nama": "Bandara Sultan Mahmud Badarudin II Palembang"},
+{"kode": "D008", "nama": "Bandara Sulthan Thaha Jambi"},
+{"kode": "D009", "nama": "Bandara Adi Soemarmo Solo"},
+{"kode": "D010", "nama": "Bandara Syamsudin Noor Banjarmasin"},
+{"kode": "D011", "nama": "Bandara Samratulangi Manado"},
+{"kode": "D014", "nama": "Bandara Kulon Progo Yogyakarta"},
+{"kode": "D015", "nama": "Bandara Ahmad Yani Semarang"},
+{"kode": "D016", "nama": "Bandara Zainuddin Abdul Madjid Lombok"},
+{"kode": "D017", "nama": "Bandara Juanda Surabaya"},
+{"kode": "D018", "nama": "Bandara Ngurah Rai Bali"},
+{"kode": "D019", "nama": "Bandara Raden Inten II International Lampung"},
+{"kode": "D020", "nama": "Bandara Pattimura Ambon"},
+{"kode": "D021", "nama": "Bandara Sultan Aji Muihammad Sepinggan Balikpapan"},
+{"kode": "D022", "nama": "Bandara Hang Nadim Batam"},
+{"kode": "D023", "nama": "Bandara Sultan Iskandar Muda Aceh"},
+{"kode": "D024", "nama": "Bandara International El Tari Kupang"},
+{"kode": "D025", "nama": "Bandara Fatmawati Soekarno Bengkulu"},
+{"kode": "D026", "nama": "Bandara International Soekarno Hatta"},
+{"kode": "D027", "nama": "Bandara International Raja Haji Fisabililah"},
+{"kode": "E001", "nama": "KM Dharma Kartika II"},
+{"kode": "E002", "nama": "KM Dharma Ferry V"},
+{"kode": "E003", "nama": "KM Dharma Rucitra I"},
+{"kode": "F001", "nama": "Pelabuhan ASDP Merak"},
+{"kode": "F003", "nama": "BTPN Mega kuningan"},
+{"kode": "F005", "nama": "Pelabuhan Ulee Lheue Aceh"},
+{"kode": "F006", "nama": "World Capital Tower"},
+{"kode": "F007", "nama": "PT ASDP Indonesia Ferry Lombok"},
+{"kode": "F008", "nama": "Pelabuhan Padangbai Bali"},
+{"kode": "F010", "nama": "ASDP Ketapang"},
+{"kode": "F011", "nama": "Pelabuhan Gilimanuk Bali"},
+{"kode": "F012", "nama": "Pelabuhan Balohan"},
+{"kode": "F013", "nama": "Java Connection Bandara YIA"},
+{"kode": "F014", "nama": "Bappeda Jawa Timur"},
+{"kode": "F015", "nama": "Pelabuhan Bakauheni"},
+{"kode": "F016", "nama": "PT.Bima Sakti Multi Sinergi"},
+{"kode": "F017", "nama": "Graha Pena Riau"},
+{"kode": "F018", "nama": "PT.Graha Pena Jawa Pos"},
+{"kode": "F019", "nama": "Polygon Bike Hub"},
+{"kode": "F020", "nama": "Pelabuhan Ajibata"},
+{"kode": "F021", "nama": "Pelabuhan Gilimas"},
+{"kode": "F022", "nama": "Pelabuhan Kedaro"},
+{"kode": "F023", "nama": "Huawei Jakarta Office "},
+{"kode": "F024", "nama": "Pelabuhan Asdp Roro Telaga Punggur"},
+{"kode": "F025", "nama": "Bank DBS Indonesia Tower"},
+{"kode": "F026", "nama": "Termial Ferry Telaga Punggur"},
+{"kode": "F027", "nama": "Gama Tower"},
+{"kode": "F028", "nama": "PLN Rayon Cipayung"},
+{"kode": "F029", "nama": "PT Pelabuhan Indonesia (Persero) Regional 3"},
+{"kode": "F030", "nama": "Pelabuhan Fery Sekupang"},
+{"kode": "F031", "nama": "PT PLN (Persero) Unit Induk Distribusi Bali)"},
+{"kode": "F032", "nama": "Pelabuhan Pelindo Tenau Kupang"},
+{"kode": "F033", "nama": "PLN ULP Bogor Raya"},
+{"kode": "G005", "nama": "Berlin Pool & Bistro Pontianak"},
+{"kode": "G007", "nama": "Point Coffee Hos Cokro 33 Bali Stand Alone"},
+{"kode": "G008", "nama": "Point Coffee Gedhe Ambon"},
+{"kode": "G009", "nama": "Point Coffee Gedhe Rest Area KM43 Merak"},
+{"kode": "G010", "nama": "Tengah People & Place Medan"},
+{"kode": "G012", "nama": "Point Coffee Gedhe Manado"},
+{"kode": "G013", "nama": "Tahu Susu Lembang"},
+{"kode": "G015", "nama": "Resto Jos Gandos Ketintang"},
+{"kode": "G016", "nama": "Turbo Billiard And Café"},
+{"kode": "G018", "nama": "Bandung Kunafe Rancaekek"},
+{"kode": "G019", "nama": "Bandung Kunafe Pasteur"},
+{"kode": "G020", "nama": "Nara Park Bandung"},
+{"kode": "G021", "nama": "Concordia Lounge Domestic Denpasar"},
+{"kode": "G023", "nama": "Jet Billiard"},
+{"kode": "G024", "nama": "Navasari Poll & Resto"},
+{"kode": "G025", "nama": "Concordia Lounge Domestic Lombok"},
+{"kode": "G026", "nama": "Almaz Fried Chicken Galaxy Bekasi"},
+{"kode": "G027", "nama": "Kentring Manik"},
+{"kode": "G028", "nama": "Bandung Kunafe Soreang"},
+{"kode": "G029", "nama": "Prime Star Billiard"},
+{"kode": "G030", "nama": "Rosin Resto Subang Rest Area"},
+{"kode": "G031", "nama": "Mon Kopi Gentan"},
+{"kode": "G032", "nama": "One Stadium Pool & Gaming"},
+{"kode": "G033", "nama": "The Grove North Sunter"},
+{"kode": "G034", "nama": "One Stix Bogor Billiard & Café"},
+{"kode": "G035", "nama": "Point Coffee Gedhe Rest Area KM 65A Medan"},
+{"kode": "G036", "nama": "Kendedes Pusat Oleh Oleh Batu Malang"},
+{"kode": "G037", "nama": "Riau Garden Pekanbaru"},
+{"kode": "G038", "nama": "Fresh Fields"},
+{"kode": "G039", "nama": "Warkop Udaa"},
+{"kode": "G040", "nama": "Warung Kopi Bahagia Bersama "},
+{"kode": "G041", "nama": "HW LiveHouse Qbis BSD"},
+{"kode": "G042", "nama": "Ninja Billiard Blok M Square"},
+{"kode": "G043", "nama": "Bumi Akik Puncak"},
+{"kode": "G044", "nama": "The Hallway Space"},
+{"kode": "G045", "nama": "Biyasa Café & Billiard"},
+{"kode": "G046", "nama": "Ninja Billiard Cibinong"},
+{"kode": "G047", "nama": "Point Coffee Gedhe Kelapa Gading"},
+{"kode": "G048", "nama": "Ninja Billiard Bintaro"},
+{"kode": "G049", "nama": "Point Coffee Gedhe Rest Area 207A"},
+{"kode": "G050", "nama": "Royal Oleh Oleh Pusat Oleh Oleh Modern Batu"},
+{"kode": "H001", "nama": "Novena Hotel"},
+{"kode": "H003", "nama": "Pop! Hotel Diponegoro Surabaya"},
+{"kode": "H005", "nama": "Starlet Hotel BSD City Tanggerang"},
+{"kode": "H006", "nama": "The Alana Hotel Malang"},
+{"kode": "H007", "nama": "Hotel Newton Bandung"},
+{"kode": "H008", "nama": "Grand Jatra Hotel Pekanbaru"},
+{"kode": "H009", "nama": "Alfa Resort Hotel & Conference Puncak Bogor"},
+{"kode": "H011", "nama": "Lorin Sentul Hotel"},
+{"kode": "H012", "nama": "Pop! Hotel Sangaji Yogyakarta"},
+{"kode": "H013", "nama": "Surabaya Suites Hotel"},
+{"kode": "H014", "nama": "The Alana Solo"},
+{"kode": "H015", "nama": "Aston Solo Hotel"},
+{"kode": "H016", "nama": "Royal Safari Garden"},
+{"kode": "H018", "nama": "Lorin Syariah Solo Hotel"},
+{"kode": "H019", "nama": "Dwangsa Lorin"},
+{"kode": "H023", "nama": "Hotel Aston Bogor"},
+{"kode": "H024", "nama": "Aston Kemayoran City Hotel"},
+{"kode": "H025", "nama": "Apartemen Serpong Green View "},
+{"kode": "H026", "nama": "Atria Hotel Gading Serpong"},
+{"kode": "H027", "nama": "Bobobox Pods Pancoran"},
+{"kode": "H028", "nama": "Bobopod Juanda"},
+{"kode": "H029", "nama": "MT Haryono Residence"},
+{"kode": "H030", "nama": "Bobopod Dago Bandung"},
+{"kode": "H031", "nama": "Bobobox Pods Paskal"},
+{"kode": "H032", "nama": "Inkopabri Cisarua Resort"},
+{"kode": "H034", "nama": "Bobopod Kota Tua"},
+{"kode": "H035", "nama": "Intercontinental Bali Resort"},
+{"kode": "H036", "nama": "Ramada Suites Hotel Solo"},
+{"kode": "H037", "nama": "TOP Malioboro Hotel Jogya"},
+{"kode": "H038", "nama": "Angkasa Garden Hotel Pekanbaru"},
+{"kode": "H039", "nama": "Bobopod Kebayoran Baru"},
+{"kode": "H040", "nama": "Bobopod Tanah Abang"},
+{"kode": "H041", "nama": "Hotel Neo+ Kebayoran"},
+{"kode": "H042", "nama": "Great Western Park"},
+{"kode": "H043", "nama": "Hotel Novotel Pekanbaru"},
+{"kode": "H044", "nama": "Grand Soll Marina Hotel Tangerang"},
+{"kode": "H045", "nama": "Hotel Puri Ayu Bali"},
+{"kode": "H046", "nama": "Bayleaf Guest House Syariah Batu"},
+{"kode": "H047", "nama": "Grand Makmur Hotel Jambi"},
+{"kode": "H048", "nama": "Hotel Horison Ultima Makassar"},
+{"kode": "H049", "nama": "Bobopod Airport CBC Tangerang"},
+{"kode": "H050", "nama": "Soll Marina Hotel Serpong"},
+{"kode": "H051", "nama": "Aston Mojokerto Hotel & Conference Center"},
+{"kode": "H052", "nama": "Gammara Hotel Makassar"},
+{"kode": "H053", "nama": "Hotel Royal Bay Makassar"},
+{"kode": "H054", "nama": "Hotel Khas Makassar"},
+{"kode": "H055", "nama": "Whiz Prime Hotel Sudirman Makassar"},
+{"kode": "H056", "nama": "Grand Asia Hotel Makassar"},
+{"kode": "H057", "nama": "Grand Central Premier Hotel Medan"},
+{"kode": "H058", "nama": "Aries Biru Hotel & Villa"},
+{"kode": "H059", "nama": "Bobopod Itc Kuningan Jakarta"},
+{"kode": "H060", "nama": "Apartement Trimezia Beverly-Paramount Serpong"},
+{"kode": "H061", "nama": "Shanaya Resort Malang"},
+{"kode": "H062", "nama": "Bobobox Pods Alun Alun Bandung"},
+{"kode": "H063", "nama": "Grand Hotel Jambi"},
+{"kode": "H064", "nama": "Fame Hotel Gading Serpong"},
+{"kode": "H065", "nama": "Front One The Andia Boyolali"},
+{"kode": "H066", "nama": "Starlet Hotel Serpong Tangerang"},
+{"kode": "H067", "nama": "LRT City Sentul - Royal Sentul Park"},
+{"kode": "H068", "nama": "Puncak Pass Resort"},
+{"kode": "H069", "nama": "Swiss Belcourt Makassar"},
+{"kode": "H070", "nama": "Hotel Sutha Inn Syariah Jambi"},
+{"kode": "H071", "nama": "Grand Arjuna Hotel Bandung"},
+{"kode": "H072", "nama": "Hotel Grandhika Setiabudi Medan"},
+{"kode": "H073", "nama": "Hotel Crystall Inn "},
+{"kode": "H074", "nama": "Cordia Hotel Banjarmasin"},
+{"kode": "H076", "nama": "Sari Ater Kamboti Bandung"},
+{"kode": "H077", "nama": "Atria Hotel Malang"},
+{"kode": "H078", "nama": "Unhas Hotel & Convention"},
+{"kode": "H079", "nama": "Gulala Azana Hotel & Resort Guci Tegal"},
+{"kode": "H080", "nama": "Labersa Hotel & Convention Center"},
+{"kode": "H081", "nama": "Grand Kanaya Hotel"},
+{"kode": "H082", "nama": "Camp Hulu Cai - Gerbang Babakan"},
+{"kode": "H083", "nama": "Hermes Palace Hotel Banda Aceh"},
+{"kode": "H084", "nama": "Cityloog Hotel Tebet"},
+{"kode": "H085", "nama": "Hotel Santika Gunung Kidul - Jogya"},
+{"kode": "H086", "nama": "Fresh Hotel Sukabumi"},
+{"kode": "H087", "nama": "Balairung Hotel Jakarta"},
+{"kode": "H088", "nama": "Chevilly Resort & Camp"},
+{"kode": "H089", "nama": "Eagle Hotel Wonosobo By Azana Collection"},
+{"kode": "H090", "nama": "Front One Hotel Purwodadi"},
+{"kode": "H091", "nama": "Kebunsu Bogor"},
+{"kode": "H092", "nama": "Bobopod Alun Alun Malang"},
+{"kode": "H093", "nama": "D'Kaliurang Resort & Convention"},
+{"kode": "H094", "nama": "Skandinavia Tangcity"},
+{"kode": "H095", "nama": "The Allure Villas Pangandaran Managed By Sahid"},
+{"kode": "H096", "nama": "Prime Park Hotel & Convention Pekanbaru"},
+{"kode": "H097", "nama": "Hotel Grand Dian Guci"},
+{"kode": "H098", "nama": "Hotel Edotel Nilam Sari"},
+{"kode": "H100", "nama": "Front One Boutique Adria Boyolali"},
+{"kode": "J001", "nama": "Masjid Atta'wun"},
+{"kode": "J002", "nama": "Masjid Istiqlal"},
+{"kode": "J003", "nama": "Masjid Raya Syekh Ahmad Khatib Al - Minangkabawi"},
+{"kode": "J004", "nama": "Masjid Raya Al-Ittihad Tebet Mas"},
+{"kode": "J005", "nama": "Masjid Al-Hakim Padang"},
+{"kode": "J006", "nama": "GBI Chris Cathedral "},
+{"kode": "J007", "nama": "Masjid Raya Mujahidin Pontianak"},
+{"kode": "J008", "nama": "Masjid Agung Sukabumi"},
+{"kode": "J009", "nama": "Masjid Agung At-Taqwa Bengkulu"},
+{"kode": "J010", "nama": "Masjid Raya Al-Insan Patal Senayan"},
+{"kode": "J011", "nama": "Masjid Agung Nurul Ikhlas Cilegon"},
+{"kode": "J012", "nama": "Masjid Agung Cianjur"},
+{"kode": "J013", "nama": "Masjid Besar Attaqwa Wanasaba"},
+{"kode": "J014", "nama": "Masjid Hudarrahman Pontianak"},
+{"kode": "K001", "nama": "Stasiun Solo Balapan"},
+{"kode": "K002", "nama": "Stasiun Gubeng Surabaya"},
+{"kode": "K003", "nama": "Stasiun Pasar Turi Surabaya"},
+{"kode": "K004", "nama": "Stasiun Malang Kotabaru"},
+{"kode": "K005", "nama": "Stasiun Cirebon Prujakan"},
+{"kode": "K006", "nama": "Stasiun Semarang Tawang"},
+{"kode": "K007", "nama": "Stasiun Purwokerto"},
+{"kode": "K008", "nama": "Stasiun Lempuyangan Yogyakarta"},
+{"kode": "K009", "nama": "Stasiun Kejaksan Cirebon"},
+{"kode": "K010", "nama": "Stasiun Bandung"},
+{"kode": "K011", "nama": "Stasiun Cisauk"},
+{"kode": "K013", "nama": "Stasiun Tugu Yogyakarta"},
+{"kode": "K014", "nama": "Stasiun Madiun"},
+{"kode": "K015", "nama": "Stasiun Kediri"},
+{"kode": "K016", "nama": "Stasiun Tegal"},
+{"kode": "K017", "nama": "Stasiun Jatibarang"},
+{"kode": "K018", "nama": "Stasiun Pekalongan"},
+{"kode": "L004", "nama": "Jagorawi Golf & Country Club"},
+{"kode": "L005", "nama": "Suvarna Jakarta Golf"},
+{"kode": "L006", "nama": "Alam Sutra Sport Center"},
+{"kode": "L008", "nama": "Flow Padel"},
+{"kode": "L009", "nama": "59 HUB - Fiftynine Hub"},
+{"kode": "L010", "nama": "Klub Bogor Raya"},
+{"kode": "L011", "nama": "Aryaduta Country Club"},
+{"kode": "L012", "nama": "Supergym Lubuk Linggau 2 Watervang"},
+{"kode": "L013", "nama": "Supergym Lubuk Linggau Senalang"},
+{"kode": "M001", "nama": "One Bell Park"},
+{"kode": "M003", "nama": "Transmart Mataram Lombok"},
+{"kode": "M004", "nama": "Bassura Mall"},
+{"kode": "M005", "nama": "Mall Botania Batam"},
+{"kode": "M006", "nama": "Tomang Toll Plaza"},
+{"kode": "M007", "nama": "Teras Kota BSD"},
+{"kode": "M008", "nama": "The Park Mall Solo"},
+{"kode": "M009", "nama": "Maspion Square"},
+{"kode": "M010", "nama": "Eka Lokasari Bogor"},
+{"kode": "M011", "nama": "Pamulang Square"},
+{"kode": "M012", "nama": "The Plaza Millenium Medan"},
+{"kode": "M014", "nama": "Suncity Mall Sidoarjo"},
+{"kode": "M016", "nama": "Mall Kuningan City"},
+{"kode": "M017", "nama": "Metro Indah Mall"},
+{"kode": "M018", "nama": "Living World Denpasar"},
+{"kode": "M019", "nama": "Istana Plaza Bandung"},
+{"kode": "M020", "nama": "Cirebon Superblock Mall"},
+{"kode": "M022", "nama": "Jambi Town Square"},
+{"kode": "M023", "nama": "WTC Batanghari Jambi"},
+{"kode": "M024", "nama": "Mall Balekota Tanggerang"},
+{"kode": "M026", "nama": "Lippo Plaza Jambi"},
+{"kode": "M027", "nama": "Mall Boxies  123"},
+{"kode": "M028", "nama": "Carstensz Mall"},
+{"kode": "M029", "nama": "Metropolis Town Square"},
+{"kode": "M030", "nama": "Jogya City Mall"},
+{"kode": "M031", "nama": "The King Shopping Center"},
+{"kode": "M032", "nama": "Sleman City Hall"},
+{"kode": "M033", "nama": "Baywalk Mall Pluit"},
+{"kode": "M034", "nama": "Palembang Square"},
+{"kode": "M035", "nama": "Lippo Plaza Yogya"},
+{"kode": "M036", "nama": "Plaza Bintaro Jaya"},
+{"kode": "M037", "nama": "Mall Pekanbaru"},
+{"kode": "M038", "nama": "Mall Malioboro Yogyakarta"},
+{"kode": "M039", "nama": "23 Paskal Shopping Center"},
+{"kode": "M040", "nama": "Opi Mall Palembang"},
+{"kode": "M041", "nama": "Galeria Mall Yogya"},
+{"kode": "M042", "nama": "Grandcity Mall Surabaya"},
+{"kode": "M043", "nama": "Plaza Kalibata Jakarta"},
+{"kode": "M044", "nama": "GAIA Bumi Raya City Pontianak"},
+{"kode": "M045", "nama": "Mall Bali Galeria"},
+{"kode": "M046", "nama": "Lippo Plaza Sunset Bali"},
+{"kode": "M047", "nama": "Marchand Hype Station Bintaro"},
+{"kode": "M048", "nama": "Lombok Epicentrum Mall"},
+{"kode": "M049", "nama": "Green Pramuka Square"},
+{"kode": "M050", "nama": "Green Walk Mall"},
+{"kode": "M051", "nama": "Plaza Renon Bali"},
+{"kode": "M052", "nama": "Mall Alam Sutera"},
+{"kode": "M053", "nama": "Sun Plaza Medan"},
+{"kode": "M054", "nama": "Java Mall Semarang"},
+{"kode": "M055", "nama": "Mall SKA Pekanbaru"},
+{"kode": "M056", "nama": "Bandung Indah Plaza"},
+{"kode": "M057", "nama": "Istana BEC Bandung"},
+{"kode": "M058", "nama": "Miko Mall Bandung"},
+{"kode": "M059", "nama": "Plaza Surabaya"},
+{"kode": "M060", "nama": "Vivo Mall Sentul"},
+{"kode": "M061", "nama": "Cihampelas Walk Bandung"},
+{"kode": "M062", "nama": "Jambi Prima Mall"},
+{"kode": "M063", "nama": "Citimall Dumai"},
+{"kode": "M064", "nama": "Living World Pekanbaru"},
+{"kode": "M065", "nama": "Transmart Pekanbaru"},
+{"kode": "M067", "nama": "Grage Mall Cirebon"},
+{"kode": "M068", "nama": "Transmart Pangkal Pinang"},
+{"kode": "M069", "nama": "Transmart Padang"},
+{"kode": "M070", "nama": "Transmart Jambi"},
+{"kode": "M071", "nama": "Transmart Palembang"},
+{"kode": "M072", "nama": "Palembang Indah Mall"},
+{"kode": "M073", "nama": "Resinda Park Karawang"},
+{"kode": "M074", "nama": "Mall Ratu Indah Makasar"},
+{"kode": "M075", "nama": "Nipah Mall Makasar"},
+{"kode": "M076", "nama": "Mataram Mall Mataram"},
+{"kode": "M077", "nama": "Palembang Square Extension"},
+{"kode": "M078", "nama": "Beach Walk Shopping Center Bali"},
+{"kode": "M079", "nama": "Cimahi Mall"},
+{"kode": "M081", "nama": "Transmart Lampung"},
+{"kode": "M082", "nama": "Mall Sosoro"},
+{"kode": "M083", "nama": "Lippo Plaza Batu Malang"},
+{"kode": "M086", "nama": "Plaza Malioboro Yogya"},
+{"kode": "M087", "nama": "Medan Mall"},
+{"kode": "M088", "nama": "Cambridge City Square"},
+{"kode": "M091", "nama": "Gajah Mada Plaza Jakarta"},
+{"kode": "M092", "nama": "City Mall Cilegon"},
+{"kode": "M093", "nama": "Bakauheni Shopping Mall"},
+{"kode": "M094", "nama": "Lagoon Avenue Mall Sungkono"},
+{"kode": "M095", "nama": "Lippo Plaza Sidoarjo"},
+{"kode": "M096", "nama": "Qmall Banjarbaru"},
+{"kode": "M097", "nama": "Centre Point Medan"},
+{"kode": "M098", "nama": "City Of Tomorrow Mall"},
+{"kode": "M101", "nama": "Mega Mall Manado"},
+{"kode": "M102", "nama": "Basko Grand Mall Padang"},
+{"kode": "M106", "nama": "Manhattan Time Square"},
+{"kode": "M107", "nama": "Singkawang Grand Mall"},
+{"kode": "M108", "nama": "Plaza Citra Pekanbaru"},
+{"kode": "M109", "nama": "Plaza Indah Bogor"},
+{"kode": "M111", "nama": "Palembang Trade Center"},
+{"kode": "M112", "nama": "Ramayana Karawang"},
+{"kode": "M113", "nama": "Pluit Village"},
+{"kode": "M114", "nama": "Cilegon Center Mall"},
+{"kode": "M115", "nama": "Nagoya Hill Mall"},
+{"kode": "M116", "nama": "Lippo Plaza Aceh"},
+{"kode": "M117", "nama": "Pentacity Mall Balikpapan"},
+{"kode": "M118", "nama": "E Walk Balikpapan"},
+{"kode": "M119", "nama": "Malang Town Square"},
+{"kode": "M120", "nama": "BSD Plaza "},
+{"kode": "M121", "nama": "Duta Mall Banjarmasin"},
+{"kode": "M122", "nama": "Transmart Carrefour Maguwoharjo"},
+{"kode": "M124", "nama": "Lagoon Mall Avenue Bekasi"},
+{"kode": "M127", "nama": "Tangcity Mall"},
+{"kode": "M128", "nama": "Botani Square Mall Bogor"},
+{"kode": "M129", "nama": "Ramayana Plaza Andalas Padang"},
+{"kode": "M130", "nama": "Lippo Plaza Medan"},
+{"kode": "M132", "nama": "Mall Cinere"},
+{"kode": "M133", "nama": "Sukaramai Trade Center"},
+{"kode": "M134", "nama": "Lawu Plaza Madiun"},
+{"kode": "M135", "nama": "Ambon City Center"},
+{"kode": "M136", "nama": "Plaza Madiun"},
+{"kode": "M137", "nama": "Rita Supermall Tegal"},
+{"kode": "M138", "nama": "Suzuya City Mall Rantau Prapat"},
+{"kode": "M139", "nama": "Tegal Plaza"},
+{"kode": "M141", "nama": "Suncity Mall Plaza Madiun"},
+{"kode": "M143", "nama": "Ciputra Seraya Pekanbaru"},
+{"kode": "M144", "nama": "Transmart Buah Batu Bandung"},
+{"kode": "M147", "nama": "Citra Xperience Kemayoran"},
+{"kode": "M148", "nama": "AEON Mall Bsd City"},
+{"kode": "M149", "nama": "Ramayana Kupang"},
+{"kode": "M150", "nama": "Jatinangor Town Square"},
+{"kode": "M153", "nama": "Basko City Mall Padang"},
+{"kode": "M154", "nama": "Matahari Department Store Aceh"},
+{"kode": "M155", "nama": "Phinisi Point Mall Makasar"},
+{"kode": "M156", "nama": "Plaza Pondok Gede Bekasi"},
+{"kode": "M157", "nama": "Royal Plaza Surabaya"},
+{"kode": "M158", "nama": "Kaza City Mall Surabaya"},
+{"kode": "M160", "nama": "Metropoltan Mall Bekasi"},
+{"kode": "M161", "nama": "Central Plaza Lampung"},
+{"kode": "M162", "nama": "Kediri Town Square"},
+{"kode": "M163", "nama": "MTC Mall Panam Pekanbaru Riau"},
+{"kode": "M164", "nama": "Plaza The Central Pekanbaru"},
+{"kode": "M167", "nama": "Mega Mall Bengkulu"},
+{"kode": "M168", "nama": "Grage City Mall Cirebon"},
+{"kode": "M169", "nama": "Tamini Square"},
+{"kode": "M170", "nama": "Mall Dinoyo City Malang"},
+{"kode": "M171", "nama": "Ring Road City Walk Mall Medan"},
+{"kode": "M172", "nama": "Cibinong Mall"},
+{"kode": "M173", "nama": "Depok Town Center"},
+{"kode": "M174", "nama": "Matahari Duta Plaza Denpasar"},
+{"kode": "M175", "nama": "Malang City Point"},
+{"kode": "M176", "nama": "ITC Mega Grosir Surabaya"},
+{"kode": "M177", "nama": "CBD Ciledug Family Mall"},
+{"kode": "M178", "nama": "Pasar Baru Trade Center Bandung"},
+{"kode": "M179", "nama": "Mall Pesona Square "},
+{"kode": "M180", "nama": "Ambon Manise Square"},
+{"kode": "M181", "nama": "Cinere Bellevue Mall"},
+{"kode": "M182", "nama": "Ujung Berung Town Square"},
+{"kode": "M183", "nama": "Mega Bekasi Hypermall"},
+{"kode": "M184", "nama": "Mall Paradise Walk Serpong"},
+{"kode": "M185", "nama": "One Batam Mall"},
+{"kode": "M187", "nama": "Mall Olympic Garden Malang"},
+{"kode": "M188", "nama": "Gajah Mada Plaza Malang"},
+{"kode": "M189", "nama": "Pacific Garden Square"},
+{"kode": "M190", "nama": "Lippo Plaza Lubuk Linggau"},
+{"kode": "M191", "nama": "Supermall Karawaci"},
+{"kode": "M192", "nama": "Suite Life Sedayu City"},
+{"kode": "M193", "nama": "Karawang Central Plaza"},
+{"kode": "M194", "nama": "Transmart Cipadung"},
+{"kode": "M196", "nama": "K Square Mall Batam"},
+{"kode": "M197", "nama": "Ramayana Samarinda Square"},
+{"kode": "M198", "nama": "Lippo Plaza Kupang"},
+{"kode": "M199", "nama": "Tentrem Mall Semarang"},
+{"kode": "M200", "nama": "The Grand Outlet East Jakarta - Karawang"},
+{"kode": "M201", "nama": "The Central Mall Gunawangsa Tidar"},
+{"kode": "M207", "nama": "Icon Walk Banten"},
+{"kode": "M208", "nama": "Darmo Trade Center Surabaya"},
+{"kode": "M210", "nama": "Transmart Graha Raya"},
+{"kode": "M212", "nama": "STS Sadang Purwakarta"},
+{"kode": "M213", "nama": "Citimall Cianjur 1"},
+{"kode": "M214", "nama": "Citimall Cianjur 2"},
+{"kode": "M215", "nama": "Pekanbaru Xchange"},
+{"kode": "M216", "nama": "D'Botanica Bandung Mall"},
+{"kode": "M217", "nama": "Buaran Plaza"},
+{"kode": "M219", "nama": "Manhattan Urban Market Medan"},
+{"kode": "M221", "nama": "Citimall Garut"},
+{"kode": "M222", "nama": "Trans Studio Mall Bali"},
+{"kode": "M223", "nama": "Kebayoran Park Mall"},
+{"kode": "M224", "nama": "Blitar Square"},
+{"kode": "M225", "nama": "Cibinong City Mall"},
+{"kode": "M226", "nama": "Mall Cijantung"},
+{"kode": "M227", "nama": "Trans Studio Mall Bandung"},
+{"kode": "M228", "nama": "Citimall Lahat"},
+{"kode": "M230", "nama": "Plaza Kalibata"},
+{"kode": "M231", "nama": "Plaza Medan Fair"},
+{"kode": "M232", "nama": "Ramayana Cilegon"},
+{"kode": "M233", "nama": "Pacific Mall Tegal"},
+{"kode": "M234", "nama": "Ciplaz Garut"},
+{"kode": "M236", "nama": "Living World Alam Sutera"},
+{"kode": "M237", "nama": "Suzuya Tanjung Morawa"},
+{"kode": "M238", "nama": "Linggajati Plaza"},
+{"kode": "M240", "nama": "The Grove Alam Sutera"},
+{"kode": "M241", "nama": "Trans Studio Mall Makassar"},
+{"kode": "M242", "nama": "Sun East Mall Banyuwangi"},
+{"kode": "M243", "nama": "Mall Mandau City"},
+{"kode": "M244", "nama": "Social Market Palembang"},
+{"kode": "M245", "nama": "Mall Ciputra Semarang"},
+{"kode": "M246", "nama": "Kediri Mall"},
+{"kode": "M247", "nama": "Balubur Town Square"},
+{"kode": "M248", "nama": "Suzuya Merdeka Mall"},
+{"kode": "M249", "nama": "Suzuya Mall Rantau Prapat"},
+{"kode": "M250", "nama": "Siantar City Square"},
+{"kode": "M251", "nama": "Festifal Citylink Bandung"},
+{"kode": "M252", "nama": "Lampung City Mall"},
+{"kode": "M253", "nama": "Ramayana Makassar Town Square"},
+{"kode": "M254", "nama": "Plaza Parahyangan"},
+{"kode": "M255", "nama": "Sukaregang Leather Centre"},
+{"kode": "M256", "nama": "Mega Trade Centre Megamas"},
+{"kode": "M257", "nama": "Tanjungpinang City Center"},
+{"kode": "M259", "nama": "Dhoho Plaza Kediri"},
+{"kode": "M260", "nama": "Mall Cikampek"},
+{"kode": "M261", "nama": "Mega Mall Batam Centre"},
+{"kode": "M262", "nama": "Mall Batam City Square"},
+{"kode": "M263", "nama": "Mall Matahari Daanmogot"},
+{"kode": "M264", "nama": "Lippo Plaza Keboen raya Bogor"},
+{"kode": "M265", "nama": "Lamongan Plaza"},
+{"kode": "M266", "nama": "Ponorogo City Center"},
+{"kode": "M267", "nama": "Mall Panakkukang"},
+{"kode": "M268", "nama": "Revo Mall Bekasi"},
+{"kode": "M269", "nama": "Depok Town Square"},
+{"kode": "M270", "nama": "Mall Artha Gading"},
+{"kode": "M271", "nama": "G Town Square"},
+{"kode": "M272", "nama": "Citiplaza Bondowoso"},
+{"kode": "M273", "nama": "ITC Roxy Mas"},
+{"kode": "M274", "nama": "Bencoolen Mall Bengkulu"},
+{"kode": "M275", "nama": "Plaza Bukit Tinggi"},
+{"kode": "M276", "nama": "Bekasi Trade Center"},
+{"kode": "M277", "nama": "A.S.S Mall Brebes"},
+{"kode": "M278", "nama": "Discovery Mall Bali"},
+{"kode": "M279", "nama": "IT Center Manado"},
+{"kode": "M280", "nama": "Ramayana Pontianak"},
+{"kode": "M281", "nama": "One District At Puri"},
+{"kode": "M282", "nama": "Palur Plaza Karanganyar"},
+{"kode": "M283", "nama": "The Galeria Mall Banjar"},
+{"kode": "M284", "nama": "Mall Of Bengkinang"},
+{"kode": "M285", "nama": "The East Batam"},
+{"kode": "M286", "nama": "Pasar Gembrong Sukasari"},
+{"kode": "M287", "nama": "Trans Studio Mall Cibubur"},
+{"kode": "M288", "nama": "Bigmall Samarinda"},
+{"kode": "M289", "nama": "Bt Batik Trusmi"},
+{"kode": "M290", "nama": "Mutiara Cahaya Slawi"},
+{"kode": "M291", "nama": "Plaza Araya Malang"},
+{"kode": "M292", "nama": "Tomang Tol Plaza Kalimalang"},
+{"kode": "M293", "nama": "The Matic Mall Majalaya"},
+{"kode": "M294", "nama": "Palembang Icon Mall"},
+{"kode": "M295", "nama": "Citywalk Lippo Cikarang"},
+{"kode": "M296", "nama": "Lippo Mall Cikarang"},
+{"kode": "M297", "nama": "Tangcity Superblock"},
+{"kode": "M298", "nama": "Lippo Plaza Jember"},
+{"kode": "M299", "nama": "Hive Harapan Indah"},
+{"kode": "M300", "nama": "Panbil Mall"},
+{"kode": "M301", "nama": "Mall Top 100 Tembesi"},
+{"kode": "M302", "nama": "Metro Plaza Pekanbaru"},
+{"kode": "M304", "nama": "Ramayana Panam Square"},
+{"kode": "M305", "nama": "Mall BTM Bogor"},
+{"kode": "N001", "nama": "Rumah Duka Husada"},
+{"kode": "N002", "nama": "Rumah Duka Tabitha Ukrida"},
+{"kode": "P001", "nama": "Yogya Mekar wangi"},
+{"kode": "P002", "nama": "Yogya Lembang"},
+{"kode": "P003", "nama": "Yogya Bojongsoang"},
+{"kode": "P004", "nama": "Yogya Sumbersari Junction"},
+{"kode": "P005", "nama": "Yogya Ciranjang Cianjur"},
+{"kode": "P009", "nama": "Swalayan Maju Bersama Denai"},
+{"kode": "P010", "nama": "Swalayan Maju Bersama Katamso"},
+{"kode": "P016", "nama": "Yogya Ciumbuleuit"},
+{"kode": "P017", "nama": "Indogrosir Malang"},
+{"kode": "P018", "nama": "Artasedana Sanur"},
+{"kode": "P019", "nama": "Fganbut"},
+{"kode": "P020", "nama": "Artasedana Ngurah Rai Singaraja"},
+{"kode": "P021", "nama": "Artasedana Surapati"},
+{"kode": "P022", "nama": "Indogrosir Jambi"},
+{"kode": "P023", "nama": "Alfamart Rest Area KM 43 Merak"},
+{"kode": "P024", "nama": "Alfamart Rest Area KM 19B-2 Bekasi"},
+{"kode": "P025", "nama": "Alfamart Rest Area KM45A Bogor"},
+{"kode": "P026", "nama": "Alfamart Rest Area KM45A-2 Bogor"},
+{"kode": "P027", "nama": "Artasedana Amlapura"},
+{"kode": "P028", "nama": "Alfamart Raya Kartini Cirebon"},
+{"kode": "P029", "nama": "Alfamart Rest Area KM 833B Probolinggo"},
+{"kode": "P030", "nama": "Alfamart Rest Area KM 819A Probolinggo"},
+{"kode": "P031", "nama": "Alfamart Rest Area KM 792B Pasuruan"},
+{"kode": "P032", "nama": "Mutiara Cahaya Mejasem"},
+{"kode": "P033", "nama": "Alfamart Diponegoro"},
+{"kode": "P034", "nama": "Lotte Grosir Jatake "},
+{"kode": "P035", "nama": "Alfamart Rest Area KM 39A-2 Cikampek"},
+{"kode": "P037", "nama": "Alfamart Rest Area KM626 B-1 Madiun"},
+{"kode": "P038", "nama": "Alfamart Rest Area KM 575A Ngawi"},
+{"kode": "P039", "nama": "Alfamart Rest Area KM208B Cirebon"},
+{"kode": "P043", "nama": "Alfamart Rest Area SPBU KM 26-1Sidoarjo"},
+{"kode": "P046", "nama": "Toserba Yogya Tegal"},
+{"kode": "P048", "nama": "Yogya Riau Junction Bandung"},
+{"kode": "P049", "nama": "Toserba Yogya Heritage"},
+{"kode": "P050", "nama": "Toserba Yogya Slawi"},
+{"kode": "P053", "nama": "Indogrosir Bogor"},
+{"kode": "P055", "nama": "Naga Swalayan Cikarang"},
+{"kode": "P056", "nama": "Indogrosir Cikokol"},
+{"kode": "P057", "nama": "Griya Batununggal Bandung"},
+{"kode": "P058", "nama": "Toserba Yogya Garut"},
+{"kode": "P059", "nama": "Artasedana Negara"},
+{"kode": "P060", "nama": "Hypermart Cyberpark Karawaci Lku"},
+{"kode": "P061", "nama": "Swalayan Goori Demak"},
+{"kode": "P062", "nama": "Swalayan Goori Gunungpati"},
+{"kode": "P063", "nama": "Swalayan Goori Karangjati"},
+{"kode": "P064", "nama": "Swalayan Goori Jatisari"},
+{"kode": "P065", "nama": "Swalayan Goori Ngaliyan"},
+{"kode": "P066", "nama": "Hypermart Metro Indah Mall Bandung"},
+{"kode": "P067", "nama": "Hypermart Puri Indah"},
+{"kode": "P068", "nama": "Hypermart Daan Mogot"},
+{"kode": "P069", "nama": "Hypermart Lippo Cikarang"},
+{"kode": "P070", "nama": "Hyfresh Cikarang Festival"},
+{"kode": "P071", "nama": "Hyfresh Supermarket Bojongsari"},
+{"kode": "P072", "nama": "Hypermart Pesona Square Depok"},
+{"kode": "P073", "nama": "Hypermart Metropolis Tanggerang"},
+{"kode": "P074", "nama": "Hypermart Mega Mall Batam Center"},
+{"kode": "P075", "nama": "Indomaret Fresh Cihampelas 149"},
+{"kode": "P076", "nama": "Indomaret Fresh Dago 166"},
+{"kode": "P077", "nama": "Indomaret Fresh Surya Sumantri"},
+{"kode": "P078", "nama": "Indomaret Point Braga"},
+{"kode": "P079", "nama": "Tropi Mart & Tropi Toko Buku Sijenjang"},
+{"kode": "P080", "nama": "Graha Mulia Plaza Probolinggo"},
+{"kode": "P081", "nama": "Graha Mulia Plaza Lumajang"},
+{"kode": "P082", "nama": "Aneka Jaya Sambiroto"},
+{"kode": "P083", "nama": "Aneka Jaya Bandungrejo"},
+{"kode": "P084", "nama": "Palapa Toserba Krian"},
+{"kode": "Q001", "nama": "PAM Event External"},
+{"kode": "R001", "nama": "Rest Area KM97 Cipularang"},
+{"kode": "R002", "nama": "Rest Area KM 260B Brebes"},
+{"kode": "R004", "nama": "Rest Area KM 88 Cipularang"},
+{"kode": "R005", "nama": "Rest Area KM 116 A Lampung"},
+{"kode": "R006", "nama": "Rest Area KM 116 B Lampung"},
+{"kode": "R007", "nama": "Rest Area KM 43 Merak"},
+{"kode": "S004", "nama": "Honda Thamrin Jambi"},
+{"kode": "S005", "nama": "Autokool Cirebon"},
+{"kode": "S006", "nama": "Auto 2000 Pramuka"},
+{"kode": "S007", "nama": "Auto 2000 Cempaka Putih"},
+{"kode": "S008", "nama": "Agung Toyota Jambi Pal 10"},
+{"kode": "S009", "nama": "Agung Toyota Teluk Kuantan"},
+{"kode": "T001", "nama": "Platinum Cineplex Magelang"},
+{"kode": "T003", "nama": "Platinum Cineplex Citimall Lahat"},
+{"kode": "T004", "nama": "Platinum Cineplex Solo"},
+{"kode": "T005", "nama": "Platinum Cineplex Sidoarjo"},
+{"kode": "T007", "nama": "Platinum Cineplex Cibitung"},
+{"kode": "T008", "nama": "Platinum Cineplex Eastvara BSD"},
+{"kode": "T009", "nama": "Platinum Cineplex Trio Mall Kebumen"},
+{"kode": "T012", "nama": "Platinum Cineplex Pangkalan Bun"},
+{"kode": "T014", "nama": "Platinum Cineplex Berau"},
+{"kode": "T015", "nama": "Platinum Cineplex Citimall Baturaja"},
+{"kode": "U001", "nama": "Binus University"},
+{"kode": "U004", "nama": "Ma'had Aisyah Binti Abu Bakar Li Al -Dakwah"},
+{"kode": "U005", "nama": "Universitas Muhammadiyah Jambi"},
+{"kode": "G02", "nama": "Warehouse Surabaya"},
+{"kode": "G01", "nama": "Warehouse Jakarta"},
+{"kode": "J016", "nama": "Masjid Raya BSD Baitul Mukhtar"},
+{"kode": "J015", "nama": "Gereja BICC Pekanbaru"},
+{"kode": "T015", "nama": "Platinum Cineplex Citimall Baturaja"},
+{"kode": "T016", "nama": "Platinum Cineplex Batu Licin"},
+{"kode": "W001", "nama": "Gramedia Merdek Bandung"},
+{"kode": "H099", "nama": "Episode Hotel Gading Serpong"},
+{"kode": "F033", "nama": "PLN ULP Bogor Barat"},
+{"kode": "W002", "nama": "Gramedia Matraman"},
+{"kode": "P085", "nama": "Indogrosir Bali"},
+{"kode": "A078", "nama": "The Madagascar Water Themepark"},
+{"kode": "C070", "nama": "RS Bhayangkara Surabaya H.S Samsoeri Mertojoso"},
+{"kode": "C071", "nama": "RS MARZOEKI MAHDI"},
+{"kode": "P086", "nama": "PALAPA TOSERBA SEPANJANG"},
+{"kode": "G051", "nama": "MALANG STRUDEL & FARM OLEH-OLEH BATU MALANG"},
+{"kode": "H101", "nama": "SAVERO HOTEL DEPOK"},
+{"kode": "M303", "nama": "KUDUS EXTENSION MALL"},
+{"kode": "M306", "nama": "LIPPO PLAZA PEKALONGAN"},
+{"kode": "M307", "nama": "LIPPO PLAZA PALANGKA RAYA"},
+{"kode": "D028", "nama": "BANDARA TJILIK RIWUT PALANGKA RAYA"},
+{"kode": "G052", "nama": "MALANG STRUDEL PLAY LAND REST AREA KM 84B"},
+{"kode": "F034", "nama": "MENARA 165"},
+{"kode": "L014", "nama": "SOUTHLINKS COUNTRY CLUB"},
+{"kode": "C072", "nama": "RS CAHAYA MEDIKA"},
+{"kode": "P087", "nama": "ALFAMART BYPASS KEDAWUNG"},
+{"kode": "P088", "nama": "TOSERBA YOGYA JATIBARANG"},
+{"kode": "C073", "nama": "RS PURI CINERE"},
+{"kode": "C073", "nama": "REST AREA TOL JAGORAWI KM 45 A"},
+{"kode": "C073", "nama": "HOTEL MELIA MAKASSAR"},
+{"kode": "C073", "nama": "HOTEL SANTIKA MAKASSAR"},
+{"kode": "C073", "nama": "SWISS-BELHOTEL WATERFRONT MAKASSAR"},
+{"kode": "C073", "nama": "LIPPO MALL NUSANTARA"},
+{"kode": "C073", "nama": "PLATINUM CINEPLEX SINGARAJA"},
+{"kode": "C073", "nama": "LEMBAH INDAH MALANG"},
+{"kode": "C073", "nama": "RSUD SAYANG KABUPATEN CIANJUR"},
+{"kode": "C073", "nama": "SILOAM HOSPITALS JAMBI"},
+{"kode": "C073", "nama": "RS CITRA SUNDARI"},
+{"kode": "C073", "nama": "MASJID AGUNG BOGOR"},
+{"kode": "C073", "nama": "GRAMEDIA SURABAYA MANYAR"},
+{"kode": "C073", "nama": "GRAMEDIA WORLD KARAWANG"},
+{"kode": "C073", "nama": "BG JUNCTION MALL"},
+{"kode": "C073", "nama": "NAGOYA CITYWALK "},
+{"kode": "C073", "nama": "TM SEASONS CITY"},
+{"kode": "T018", "nama": "KOTA CINEMA MALL JEMBER"},
+];
+
+  const partRows = document.getElementById('partRows');
+  const addPartRowBtn = document.getElementById('addPartRow');
+
+  function filterParts(query) {
+    const q = query.trim().toLowerCase();
+    if (!q) return PARTS_LIST.filter(function (p) { return p.kode !== 'Lain Lain'; }).slice(0, 8);
+    return PARTS_LIST.filter(function (p) {
+      return p.kode !== 'Lain Lain' && (
+        p.kode.toLowerCase().indexOf(q) !== -1 ||
+        p.nama.toLowerCase().indexOf(q) !== -1
+      );
+    }).slice(0, 8);
+  }
+
+  function renderSuggestions(listEl, matches) {
+    if (matches.length === 0) {
+      listEl.innerHTML = '<div class="autocomplete-empty">Tidak ada di daftar — akan disimpan sebagai teks bebas</div>';
+      listEl.classList.add('open');
+      return;
+    }
+    listEl.innerHTML = matches.map(function (p) {
+      return '<div class="autocomplete-item" data-kode="' + escapeAttr(p.kode) + '" data-nama="' + escapeAttr(p.nama) + '">' +
+        '<span class="ac-kode">' + escapeHtml(p.kode) + '</span>' +
+        '<span class="ac-nama">' + escapeHtml(p.nama) + '</span>' +
+        '</div>';
+    }).join('');
+    listEl.classList.add('open');
+  }
+
+  function addPartRow() {
+    const row = document.createElement('div');
+    row.className = 'part-row';
+    row.innerHTML =
+      '<div class="autocomplete-wrap">' +
+        '<input type="text" class="part-input" placeholder="Ketik nama atau kode part…" autocomplete="off">' +
+        '<div class="autocomplete-list"></div>' +
+      '</div>' +
+      '<input type="number" class="part-qty" min="1" value="1" placeholder="Qty">' +
+      '<button type="button" class="remove-row" title="Hapus item">&times;</button>';
+
+    const input = row.querySelector('.part-input');
+    const list = row.querySelector('.autocomplete-list');
+
+    input.addEventListener('input', function () {
+      row.dataset.kode = ''; // ketikan berubah, lepas kaitan ke part terpilih
+      renderSuggestions(list, filterParts(input.value));
+    });
+
+    input.addEventListener('focus', function () {
+      renderSuggestions(list, filterParts(input.value));
+    });
+
+    list.addEventListener('mousedown', function (e) {
+      const item = e.target.closest('.autocomplete-item');
+      if (!item) return;
+      e.preventDefault();
+      input.value = item.getAttribute('data-kode') + ' — ' + item.getAttribute('data-nama');
+      row.dataset.kode = item.getAttribute('data-kode');
+      list.classList.remove('open');
+    });
+
+    input.addEventListener('blur', function () {
+      setTimeout(function () { list.classList.remove('open'); }, 100);
+    });
+
+    row.querySelector('.remove-row').addEventListener('click', function () {
+      if (partRows.children.length > 1) {
+        row.remove();
+      } else {
+        input.value = '';
+        row.dataset.kode = '';
+        row.querySelector('.part-qty').value = 1;
+      }
+    });
+
+    partRows.appendChild(row);
+  }
+
+  addPartRowBtn.addEventListener('click', addPartRow);
+
+  function collectParts() {
+    const items = [];
+    const detail = [];
+    partRows.querySelectorAll('.part-row').forEach(function (row) {
+      const input = row.querySelector('.part-input');
+      const qty = parseInt(row.querySelector('.part-qty').value, 10) || 1;
+      const typed = input.value.trim();
+      if (!typed) return; // baris kosong, diabaikan
+
+      let label = typed;
+      let nama = typed;
+      const kode = row.dataset.kode || '';
+      if (kode) {
+        const found = PARTS_LIST.find(function (p) { return p.kode === kode; });
+        if (found) { label = found.kode + ' - ' + found.nama; nama = found.nama; }
+      }
+
+      items.push(label + ' (x' + qty + ')');
+      detail.push({ kode: kode, nama: nama, qty: qty });
+    });
+    return { text: items.join('; '), count: items.length, detail: detail };
+  }
+
+  function resetPartRows() {
+    partRows.innerHTML = '';
+    addPartRow();
+  }
+
+  resetPartRows();
+
+  // ==== LOKASI AUTOCOMPLETE ====
+  const lokasiInput = document.getElementById('lokasi');
+  const lokasiList = document.getElementById('lokasiList');
+
+  function filterOutlets(query) {
+    const q = query.trim().toLowerCase();
+    if (!q) return OUTLET_LIST.slice(0, 8);
+    return OUTLET_LIST.filter(function (o) {
+      return o.kode.toLowerCase().indexOf(q) !== -1 || o.nama.toLowerCase().indexOf(q) !== -1;
+    }).slice(0, 8);
+  }
+
+  lokasiInput.addEventListener('input', function () {
+    renderSuggestions(lokasiList, filterOutlets(lokasiInput.value));
+  });
+
+  lokasiInput.addEventListener('focus', function () {
+    renderSuggestions(lokasiList, filterOutlets(lokasiInput.value));
+  });
+
+  lokasiList.addEventListener('mousedown', function (e) {
+    const item = e.target.closest('.autocomplete-item');
+    if (!item) return;
+    e.preventDefault();
+    lokasiInput.value = item.getAttribute('data-kode') + ' — ' + item.getAttribute('data-nama');
+    lokasiList.classList.remove('open');
+  });
+
+  lokasiInput.addEventListener('blur', function () {
+    setTimeout(function () { lokasiList.classList.remove('open'); }, 100);
+  });
+
+  // ==== FOTO ====
+  const fotoInput = document.getElementById('fotoInput');
+  const fotoPreviewWrap = document.getElementById('fotoPreviewWrap');
+  const fotoPreviewImg = document.getElementById('fotoPreviewImg');
+  const fotoRemoveBtn = document.getElementById('fotoRemoveBtn');
+  const fotoHint = document.getElementById('fotoHint');
+  let fotoDataUrl = null; // hasil kompres, siap dikirim
+
+  const MAX_FOTO_DIMENSION = 1280;
+  const MAX_ORIGINAL_MB = 15;
+
+  function compressImage(file, maxDim) {
+    return new Promise(function (resolve, reject) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          let w = img.width, h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) { h = Math.round(h * (maxDim / w)); w = maxDim; }
+            else { w = Math.round(w * (maxDim / h)); h = maxDim; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.75));
+        };
+        img.onerror = function () { reject(new Error('Gagal membaca gambar')); };
+        img.src = e.target.result;
+      };
+      reader.onerror = function () { reject(new Error('Gagal membaca file')); };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  fotoInput.addEventListener('change', async function () {
+    const file = fotoInput.files[0];
+    if (!file) return;
+
+    if (file.size > MAX_ORIGINAL_MB * 1024 * 1024) {
+      fotoHint.textContent = 'Ukuran foto terlalu besar (maks ' + MAX_ORIGINAL_MB + 'MB).';
+      fotoInput.value = '';
+      return;
+    }
+
+    fotoHint.textContent = 'Memproses foto…';
+    try {
+      fotoDataUrl = await compressImage(file, MAX_FOTO_DIMENSION);
+      fotoPreviewImg.src = fotoDataUrl;
+      fotoPreviewWrap.style.display = 'flex';
+      fotoHint.textContent = '';
+    } catch (err) {
+      fotoHint.textContent = 'Gagal memproses foto: ' + err.message;
+      fotoDataUrl = null;
+    }
+  });
+
+  fotoRemoveBtn.addEventListener('click', function () {
+    fotoDataUrl = null;
+    fotoInput.value = '';
+    fotoPreviewWrap.style.display = 'none';
+    fotoHint.textContent = '';
+  });
+
+  function resetFoto() {
+    fotoDataUrl = null;
+    fotoInput.value = '';
+    fotoPreviewWrap.style.display = 'none';
+    fotoHint.textContent = '';
+  }
+
+  const requestFormPanel = document.getElementById('requestFormPanel');
+  const form = document.getElementById('requestForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const formStatus = document.getElementById('formStatus');
+  const tableWrap = document.getElementById('tableWrap');
+  const configWarning = document.getElementById('configWarning');
+
+  const editModal = document.getElementById('editModal');
+  const editModalTitle = document.getElementById('editModalTitle');
+  const editModalSubtitle = document.getElementById('editModalSubtitle');
+  const editModalLabel = document.getElementById('editModalLabel');
+  const editModalInput = document.getElementById('editModalInput');
+  const editModalCancel = document.getElementById('editModalCancel');
+  const editModalSave = document.getElementById('editModalSave');
+  let activeEditId = null;
+  let activeEditField = null; // 'noResi' atau 'progres'
+
+  const FIELD_CONFIG = {
+    noResi: { title: 'Isi No Resi', label: 'No Resi', placeholder: 'Contoh: JX123456789', action: 'updateResi', payloadKey: 'noResi' },
+    progres: { title: 'Update Progres', label: 'Progres', placeholder: 'Contoh: Diproses gudang', action: 'updateProgres', payloadKey: 'progres' }
+  };
+
+  function openEditModal(field, id, nama, currentValue) {
+    const cfg = FIELD_CONFIG[field];
+    activeEditId = id;
+    activeEditField = field;
+    editModalTitle.textContent = cfg.title;
+    editModalLabel.textContent = cfg.label;
+    editModalInput.placeholder = cfg.placeholder;
+    editModalSubtitle.textContent = 'Request atas nama ' + nama;
+    editModalInput.value = currentValue || '';
+    editModal.classList.add('open');
+    editModalInput.focus();
+  }
+
+  function isConfigured() {
+    return WEB_APP_URL && WEB_APP_URL.indexOf('http') === 0;
+  }
+
+  function fmtDate(v) {
+    if (!v) return '';
+    const d = new Date(v);
+    if (isNaN(d)) return v;
+    return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  function escapeHtml(str) {
+    if (str === undefined || str === null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function escapeAttr(str) {
+    return escapeHtml(str).replace(/"/g, '&quot;');
+  }
+
+  // ==== DASHBOARD ADMIN ====
+  const adminToggleBtn = document.getElementById('adminToggleBtn');
+  const adminPanel = document.getElementById('adminPanel');
+  const adminLoginGate = document.getElementById('adminLoginGate');
+  const adminContent = document.getElementById('adminContent');
+  const adminPasswordInput = document.getElementById('adminPasswordInput');
+  const adminLoginBtn = document.getElementById('adminLoginBtn');
+  const adminLoginStatus = document.getElementById('adminLoginStatus');
+  const adminRequestsWrap = document.getElementById('adminRequestsWrap');
+  const stockWrap = document.getElementById('stockWrap');
+  const addStockBtn = document.getElementById('addStockBtn');
+
+  const stockModal = document.getElementById('stockModal');
+  const stockModalTitle = document.getElementById('stockModalTitle');
+  const stockModalKodeInput = document.getElementById('stockModalKodeInput');
+  const stockModalKodeList = document.getElementById('stockModalKodeList');
+  const stockModalNamaInput = document.getElementById('stockModalNamaInput');
+  const stockModalStokInput = document.getElementById('stockModalStokInput');
+  const stockModalCancel = document.getElementById('stockModalCancel');
+  const stockModalSave = document.getElementById('stockModalSave');
+
+  let adminPassword = null;
+  let stockModalMode = 'add'; // 'add' atau 'edit'
+
+  let lastRequestsData = [];
+  let staffSortBy = 'date_desc';
+  let adminSortBy = 'date_desc';
+  let staffSearchTerm = '';
+  let adminSearchTerm = '';
+
+  const staffSortSelect = document.getElementById('staffSortSelect');
+  const adminSortSelect = document.getElementById('adminSortSelect');
+  const staffSearchInput = document.getElementById('staffSearchInput');
+  const adminSearchInput = document.getElementById('adminSearchInput');
+
+  function sortRequests(rows, sortBy) {
+    const list = (rows || []).slice();
+    list.sort(function (a, b) {
+      const at = new Date(a.timestamp).getTime() || 0;
+      const bt = new Date(b.timestamp).getTime() || 0;
+      return sortBy === 'date_asc' ? at - bt : bt - at;
+    });
+    return list;
+  }
+
+  function filterByName(rows, term) {
+    const t = (term || '').toString().trim().toLowerCase();
+    if (!t) return rows || [];
+    return (rows || []).filter(function (r) {
+      return (r.nama || '').toString().toLowerCase().indexOf(t) !== -1;
+    });
+  }
+
+  function applyStaffView() {
+    renderTable(sortRequests(filterByName(lastRequestsData, staffSearchTerm), staffSortBy));
+  }
+
+  function applyAdminView() {
+    renderAdminRequests(sortRequests(filterByName(lastRequestsData, adminSearchTerm), adminSortBy));
+  }
+
+  if (staffSortSelect) {
+    staffSortSelect.addEventListener('change', function () {
+      staffSortBy = staffSortSelect.value;
+      applyStaffView();
+    });
+  }
+
+  if (adminSortSelect) {
+    adminSortSelect.addEventListener('change', function () {
+      adminSortBy = adminSortSelect.value;
+      applyAdminView();
+    });
+  }
+
+  if (staffSearchInput) {
+    staffSearchInput.addEventListener('input', function () {
+      staffSearchTerm = staffSearchInput.value;
+      applyStaffView();
+    });
+  }
+
+  if (adminSearchInput) {
+    adminSearchInput.addEventListener('input', function () {
+      adminSearchTerm = adminSearchInput.value;
+      applyAdminView();
+    });
+  }
+
+  function isAdminUnlocked() {
+    return adminContent.style.display !== 'none';
+  }
+
+  async function refreshAllData() {
+    if (!isConfigured()) {
+      configWarning.style.display = 'block';
+      tableWrap.innerHTML = '<div class="empty-state">Belum bisa memuat data — isi WEB_APP_URL dulu.</div>';
+      return;
+    }
+    try {
+      const res = await fetch(WEB_APP_URL);
+      const json = await res.json();
+      if (!json.ok) throw new Error(json.error || 'Gagal memuat data');
+      lastRequestsData = json.data || [];
+      applyStaffView();
+      if (isAdminUnlocked()) {
+        applyAdminView();
+        renderStockTable(json.stock || []);
+      }
+    } catch (err) {
+      tableWrap.innerHTML = '<div class="empty-state">Gagal memuat data: ' + err.message + '</div>';
+    }
+  }
+
+  function renderTable(rows) {
+    if (!rows || rows.length === 0) {
+      tableWrap.innerHTML = '<div class="empty-state">Belum ada request.</div>';
+      return;
+    }
+
+    let html = '<table><thead><tr>' +
+      '<th>Nama</th><th>Lokasi</th><th>No Kursi</th><th>Alamat Diterima</th>' +
+      '<th>Parts</th><th>Foto</th><th>Status</th><th>No Resi</th><th>Progres</th>' +
+      '</tr></thead><tbody>';
+
+    rows.forEach(function (r) {
+      const hasResi = r.noResi && String(r.noResi).trim() !== '';
+      const hasFoto = r.fotoId && String(r.fotoId).trim() !== '';
+      const hasProgres = r.progres && String(r.progres).trim() !== '';
+      const isApproved = r.status === 'Approved';
+      html += '<tr>' +
+        '<td data-label="Nama">' + escapeHtml(r.nama) + '</td>' +
+        '<td data-label="Lokasi">' + escapeHtml(r.lokasi) + '</td>' +
+        '<td data-label="No Kursi">' + escapeHtml(r.noKursi) + '</td>' +
+        '<td data-label="Alamat Diterima">' + escapeHtml(r.alamatDiterima) + '</td>' +
+        '<td data-label="Parts">' + escapeHtml(r.parts).replace(/\n/g, '<br>') + '</td>' +
+        '<td data-label="Foto">' +
+          (hasFoto
+            ? '<a href="https://drive.google.com/file/d/' + encodeURIComponent(r.fotoId) + '/view" target="_blank" rel="noopener">' +
+                '<img class="foto-thumb" src="https://drive.google.com/thumbnail?id=' + encodeURIComponent(r.fotoId) + '&sz=w150" alt="Foto request"></a>'
+            : '<span class="hint-text">—</span>') +
+        '</td>' +
+        '<td data-label="Status">' +
+          (isApproved ? '<span class="badge ok">Approved</span>' : '<span class="badge pending">Pending</span>') +
+        '</td>' +
+        '<td data-label="No Resi">' +
+          (hasResi
+            ? '<span class="badge ok">' + escapeHtml(r.noResi) + '</span>'
+            : '<span class="badge pending">Belum diisi</span>') +
+        '</td>' +
+        '<td data-label="Progres">' +
+          (hasProgres
+            ? '<span class="badge progres">' + escapeHtml(r.progres) + '</span>'
+            : '<span class="badge pending">Belum ada</span>') +
+        '</td>' +
+        '</tr>';
+    });
+
+    html += '</tbody></table>';
+    tableWrap.innerHTML = html;
+  }
+
+  function renderAdminRequests(rows) {
+    if (!rows || rows.length === 0) {
+      adminRequestsWrap.innerHTML = '<div class="empty-state">Belum ada request.</div>';
+      return;
+    }
+
+    let html = '<table><thead><tr>' +
+      '<th>Nama</th><th>Lokasi</th><th>Parts</th><th>Status</th><th>No Resi</th><th>Progres</th><th>Aksi</th>' +
+      '</tr></thead><tbody>';
+
+    rows.forEach(function (r) {
+      const isApproved = r.status === 'Approved';
+      html += '<tr>' +
+        '<td data-label="Nama">' + escapeHtml(r.nama) + '</td>' +
+        '<td data-label="Lokasi">' + escapeHtml(r.lokasi) + '</td>' +
+        '<td data-label="Parts">' + escapeHtml(r.parts).replace(/\n/g, '<br>') + '</td>' +
+        '<td data-label="Status">' +
+          (isApproved ? '<span class="badge ok">Approved</span>' : '<span class="badge pending">Pending</span>') +
+        '</td>' +
+        '<td data-label="No Resi">' +
+          (r.noResi ? escapeHtml(r.noResi) : '<span class="hint-text">Belum diisi</span>') +
+          '<button class="resi-btn field-edit-btn" data-field="noResi" data-id="' + r.id + '" data-nama="' + escapeAttr(r.nama) + '" data-value="' + escapeAttr(r.noResi || '') + '">' +
+            (r.noResi ? 'Ubah' : 'Isi') +
+          '</button>' +
+        '</td>' +
+        '<td data-label="Progres">' +
+          (r.progres ? escapeHtml(r.progres) : '<span class="hint-text">Belum ada</span>') +
+          '<button class="resi-btn field-edit-btn" data-field="progres" data-id="' + r.id + '" data-nama="' + escapeAttr(r.nama) + '" data-value="' + escapeAttr(r.progres || '') + '">' +
+            (r.progres ? 'Ubah' : 'Isi') +
+          '</button>' +
+        '</td>' +
+        '<td data-label="Aksi">' +
+          (isApproved
+            ? '<span class="hint-text">Sudah di-approve</span>'
+            : '<button class="resi-btn approve-btn" data-id="' + r.id + '">Approve</button>') +
+        '</td>' +
+        '</tr>';
+    });
+
+    html += '</tbody></table>';
+    adminRequestsWrap.innerHTML = html;
+
+    adminRequestsWrap.querySelectorAll('.approve-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        approveRequest(btn.getAttribute('data-id'), btn);
+      });
+    });
+
+    adminRequestsWrap.querySelectorAll('.field-edit-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        openEditModal(
+          btn.getAttribute('data-field'),
+          btn.getAttribute('data-id'),
+          btn.getAttribute('data-nama'),
+          btn.getAttribute('data-value')
+        );
+      });
+    });
+  }
+
+  function approveRequest(id, btn) {
+    if (!adminPassword) return;
+    btn.disabled = true;
+    btn.textContent = 'Memproses…';
+    fetch(WEB_APP_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'approveRequest', id: id, adminPassword: adminPassword })
+    })
+      .then(function (res) { return res.json(); })
+      .then(function (json) {
+        if (!json.ok) {
+          alert('Gagal approve: ' + json.error);
+          btn.disabled = false;
+          btn.textContent = 'Approve';
+          return;
+        }
+        if (json.warnings && json.warnings.length) {
+          alert('Request di-approve.\n\nPeringatan stock:\n- ' + json.warnings.join('\n- '));
+        }
+        refreshAllData();
+      })
+      .catch(function (err) {
+        alert('Gagal approve: ' + err.message);
+        btn.disabled = false;
+        btn.textContent = 'Approve';
+      });
+  }
+
+  function renderStockTable(stock) {
+    if (!stock || stock.length === 0) {
+      stockWrap.innerHTML = '<div class="empty-state">Belum ada data stock. Klik "+ Tambah Item Stock".</div>';
+      return;
+    }
+
+    let html = '<table><thead><tr><th>Kode</th><th>Nama</th><th>Stock</th><th>Aksi</th></tr></thead><tbody>';
+    stock.forEach(function (s) {
+      const low = Number(s.stock) <= 0;
+      html += '<tr>' +
+        '<td data-label="Kode">' + escapeHtml(s.kode) + '</td>' +
+        '<td data-label="Nama">' + escapeHtml(s.nama) + '</td>' +
+        '<td data-label="Stock" class="' + (low ? 'stock-low' : '') + '">' + escapeHtml(s.stock) + '</td>' +
+        '<td data-label="Aksi"><button class="resi-btn edit-stock-btn" data-kode="' + escapeAttr(s.kode) + '" data-nama="' + escapeAttr(s.nama) + '" data-stock="' + escapeAttr(s.stock) + '">Ubah</button></td>' +
+        '</tr>';
+    });
+    html += '</tbody></table>';
+    stockWrap.innerHTML = html;
+
+    stockWrap.querySelectorAll('.edit-stock-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        openStockModal('edit', btn.getAttribute('data-kode'), btn.getAttribute('data-nama'), btn.getAttribute('data-stock'));
+      });
+    });
+  }
+
+  function openStockModal(mode, kode, nama, stock) {
+    stockModalMode = mode;
+    if (mode === 'edit') {
+      stockModalTitle.textContent = 'Ubah Stock';
+      stockModalKodeInput.value = kode;
+      stockModalKodeInput.disabled = true;
+      stockModalNamaInput.value = nama;
+      stockModalNamaInput.disabled = true;
+      stockModalStokInput.value = stock;
+    } else {
+      stockModalTitle.textContent = 'Tambah Item Stock';
+      stockModalKodeInput.value = '';
+      stockModalKodeInput.disabled = false;
+      stockModalNamaInput.value = '';
+      stockModalNamaInput.disabled = false;
+      stockModalStokInput.value = 0;
+    }
+    stockModal.classList.add('open');
+  }
+
+  stockModalKodeInput.addEventListener('input', function () {
+    if (stockModalMode !== 'add') return;
+    renderSuggestions(stockModalKodeList, filterParts(stockModalKodeInput.value));
+  });
+  stockModalKodeInput.addEventListener('focus', function () {
+    if (stockModalMode !== 'add') return;
+    renderSuggestions(stockModalKodeList, filterParts(stockModalKodeInput.value));
+  });
+  stockModalKodeList.addEventListener('mousedown', function (e) {
+    const item = e.target.closest('.autocomplete-item');
+    if (!item) return;
+    e.preventDefault();
+    stockModalKodeInput.value = item.getAttribute('data-kode');
+    stockModalNamaInput.value = item.getAttribute('data-nama');
+    stockModalKodeList.classList.remove('open');
+  });
+  stockModalKodeInput.addEventListener('blur', function () {
+    setTimeout(function () { stockModalKodeList.classList.remove('open'); }, 100);
+  });
+
+  stockModalCancel.addEventListener('click', function () {
+    stockModal.classList.remove('open');
+  });
+
+  stockModalSave.addEventListener('click', function () {
+    const kode = stockModalKodeInput.value.trim();
+    const nama = stockModalNamaInput.value.trim();
+    const stok = parseInt(stockModalStokInput.value, 10);
+    if (!kode || !nama || isNaN(stok) || stok < 0) {
+      alert('Lengkapi kode, nama, dan stock (angka ≥ 0).');
+      return;
+    }
+
+    const action = stockModalMode === 'edit' ? 'setStock' : 'addStockItem';
+    const payload = { action: action, kode: kode, nama: nama, stock: stok, adminPassword: adminPassword };
+
+    stockModalSave.disabled = true;
+    fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) })
+      .then(function (res) { return res.json(); })
+      .then(function (json) {
+        if (!json.ok) { alert('Gagal: ' + json.error); return; }
+        stockModal.classList.remove('open');
+        refreshAllData();
+      })
+      .catch(function (err) { alert('Gagal: ' + err.message); })
+      .finally(function () { stockModalSave.disabled = false; });
+  });
+
+  addStockBtn.addEventListener('click', function () { openStockModal('add'); });
+
+  function showFormPanelOnly() {
+    requestFormPanel.style.display = 'block';
+    daftarRequestPanel.style.display = 'none';
+    adminPanel.style.display = 'none';
+  }
+
+  adminToggleBtn.addEventListener('click', function () {
+    const isCurrentlyOpen = adminPanel.style.display !== 'none';
+    if (isCurrentlyOpen) {
+      showFormPanelOnly();
+      return;
+    }
+    requestFormPanel.style.display = 'none';
+    daftarRequestPanel.style.display = 'none';
+    adminPanel.style.display = 'block';
+    adminPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (adminPassword) {
+      adminLoginGate.style.display = 'none';
+      adminContent.style.display = 'block';
+      refreshAllData();
+    } else {
+      adminLoginGate.style.display = 'block';
+      adminContent.style.display = 'none';
+    }
+  });
+
+  adminLoginBtn.addEventListener('click', function () {
+    const pass = adminPasswordInput.value;
+    if (!pass) return;
+    adminLoginStatus.textContent = 'Memeriksa…';
+    adminLoginStatus.className = 'status-msg';
+    fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'checkAdminPassword', adminPassword: pass }) })
+      .then(function (res) { return res.json(); })
+      .then(function (json) {
+        if (json.ok) {
+          adminPassword = pass;
+          adminPasswordInput.value = '';
+          adminLoginStatus.textContent = '';
+          adminLoginGate.style.display = 'none';
+          adminContent.style.display = 'block';
+          refreshAllData();
+        } else {
+          adminLoginStatus.textContent = 'Password salah.';
+          adminLoginStatus.className = 'status-msg error';
+        }
+      })
+      .catch(function (err) {
+        adminLoginStatus.textContent = 'Gagal memeriksa: ' + err.message;
+        adminLoginStatus.className = 'status-msg error';
+      });
+  });
+
+  // ==== SUBMIT REQUEST BARU ====
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (!isConfigured()) {
+      formStatus.textContent = 'WEB_APP_URL belum diisi.';
+      formStatus.className = 'status-msg error';
+      return;
+    }
+
+    const partsResult = collectParts();
+    if (partsResult.count === 0) {
+      formStatus.textContent = 'Isi minimal satu part.';
+      formStatus.className = 'status-msg error';
+      return;
+    }
+
+    const payload = {
+      action: 'create',
+      nama: document.getElementById('nama').value.trim(),
+      lokasi: document.getElementById('lokasi').value.trim(),
+      noKursi: document.getElementById('noKursi').value.trim(),
+      alamatDiterima: document.getElementById('alamatDiterima').value.trim(),
+      parts: partsResult.text,
+      partsDetail: JSON.stringify(partsResult.detail)
+    };
+
+    if (fotoDataUrl) {
+      const commaIdx = fotoDataUrl.indexOf(',');
+      payload.fotoBase64 = fotoDataUrl.slice(commaIdx + 1);
+      payload.fotoType = 'image/jpeg';
+      payload.fotoName = 'request-' + Date.now() + '.jpg';
+    }
+
+    submitBtn.disabled = true;
+    formStatus.textContent = 'Mengirim…';
+    formStatus.className = 'status-msg';
+
+    try {
+      const res = await fetch(WEB_APP_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      const json = await res.json();
+      if (!json.ok) throw new Error(json.error || 'Gagal mengirim');
+
+      form.reset();
+      resetPartRows();
+      resetFoto();
+      formStatus.textContent = 'Request terkirim.';
+      formStatus.className = 'status-msg success';
+      refreshAllData();
+    } catch (err) {
+      formStatus.textContent = 'Gagal: ' + err.message;
+      formStatus.className = 'status-msg error';
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+
+  editModalCancel.addEventListener('click', function () {
+    editModal.classList.remove('open');
+    activeEditId = null;
+    activeEditField = null;
+  });
+
+  editModalSave.addEventListener('click', async function () {
+    if (!activeEditId || !activeEditField) return;
+    const val = editModalInput.value.trim();
+    if (!val) { editModalInput.focus(); return; }
+
+    const cfg = FIELD_CONFIG[activeEditField];
+    const payload = { action: cfg.action, id: activeEditId, adminPassword: adminPassword };
+    payload[cfg.payloadKey] = val;
+
+    editModalSave.disabled = true;
+    try {
+      const res = await fetch(WEB_APP_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      const json = await res.json();
+      if (!json.ok) throw new Error(json.error || 'Gagal menyimpan');
+
+      editModal.classList.remove('open');
+      activeEditId = null;
+      activeEditField = null;
+      refreshAllData();
+    } catch (err) {
+      alert('Gagal menyimpan: ' + err.message);
+    } finally {
+      editModalSave.disabled = false;
+    }
+  });
+
+  const statusUploadBtn = document.getElementById('statusUploadBtn');
+  const daftarRequestPanel = document.getElementById('daftarRequestPanel');
+
+  statusUploadBtn.addEventListener('click', function () {
+    const isCurrentlyOpen = daftarRequestPanel.style.display !== 'none';
+    if (isCurrentlyOpen) {
+      showFormPanelOnly();
+      return;
+    }
+    requestFormPanel.style.display = 'none';
+    adminPanel.style.display = 'none';
+    daftarRequestPanel.style.display = 'block';
+    daftarRequestPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  refreshAllData();
+</script>
+
+</body>
+</html>
